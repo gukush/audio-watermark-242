@@ -1,0 +1,3 @@
+[submodule "NISQA"]
+	path = NISQA
+	url = https://github.com/gabrielmittag/NISQA.git
