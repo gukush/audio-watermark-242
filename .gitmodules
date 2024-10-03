@@ -4,3 +4,6 @@
 [submodule "audioseal"]
 	path = audioseal
 	url = https://github.com/facebookresearch/audioseal.git
+[submodule "OpenVoice"]
+	path = OpenVoice
+	url = https://github.com/myshell-ai/OpenVoice.git
