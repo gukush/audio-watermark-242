@@ -1,3 +1,0 @@
-RUN conda init bash
-RUN conda env create -f env.yml
-RUN conda activate audio-watermark
