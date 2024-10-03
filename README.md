@@ -1,4 +1,5 @@
 # audio-watermark-242
+## Setup
 Repository for research project about watermarkng audio
 
 To run the sample experiment first create image using docker.
@@ -17,4 +18,15 @@ docker exec -it audio-watermark /bin/bash
 Finally, in the docker container run following to activate conda environment:
 ```
 cd /project && conda activate audio-watermark
+```
+
+## Known issues
+Long setup times - the image after building is around 7GB. So in case of changes of env.yml it should be advised to install packages without reseting the image (either through conda or pip).
+To check current environment used in conda, run following command:
+```
+conda env export --name audio-watermark > env-compare.yml.tmp
+```
+For some reason gdown from env.yml was not installed during docker build.
+```
+pip install gdown
 ```
