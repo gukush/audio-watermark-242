@@ -7,8 +7,7 @@ audio/*
 *.tmp
 *.opus
 results/
-results/*
+results/*.csv
 python-venv/
-*.csv
 *.pth
 models/

@@ -21,24 +21,26 @@ def convert_to_mp3(input_file, output_file):
     # Ensure the output format is MP3
     stream = ffmpeg.input(input_file)
     stream = ffmpeg.output(stream, output_file, format='mp3', acodec='libmp3lame')
-    ffmpeg.overwrite_output(stream)
+    stream = ffmpeg.overwrite_output(stream)
+    ffmpeg.run(stream)
 
 def convert_to_wav(input_file, output_file):
     # Define the input and output process, ensuring the output is in WAV format
     stream = ffmpeg.input(input_file)
     stream = ffmpeg.output(stream, output_file, format='wav')
-    ffmpeg.overwrite_output(stream)
+    stream = ffmpeg.overwrite_output(stream)
+    ffmpeg.run(stream)
 
 def voice_cloning():
     url = "https://drive.google.com/file/d/1xykjCne5zl4mlVwZ2gqU31SGIt85DZDm/view?usp=drive_link"
-    output = "./audio/voice-polish-1.opus"
+    output = "/project/audio/voice-polish-1.opus"
     download_audio(url,output)
-    ckpt_converter = 'models/checkpoints_v2/converter'
+    ckpt_converter = '/models/checkpoints_v2/converter'
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     output_dir = 'results'
     tone_color_converter = ToneColorConverter(f'{ckpt_converter}/config.json', device=device)
     tone_color_converter.load_ckpt(f'{ckpt_converter}/checkpoint.pth')
-    convert_to_mp3('audio/voice-hispanic-1-watermarked_mono.opus','audio/voice-hispanic-1-watermarked_mono.mp3')
+    convert_to_mp3('/project/audio/voice-hispanic-1-watermarked_mono.opus','/project/audio/voice-hispanic-1-watermarked_mono.mp3')
     reference_speaker = 'audio/voice-hispanic-1-watermarked_mono.mp3'
     target_se, audio_name = se_extractor.get_se(reference_speaker,tone_color_converter,vad=False)
     convert_to_wav('audio/voice-polish-1.opus','audio/voice-polish-1.wav')
@@ -57,7 +59,7 @@ def download_audio(url,output):
 
 def audio_watermarking():
     url = "https://drive.google.com/file/d/1Ks8Wil0ZIq5oTa7DItGmpd8bI7jXcOJM/view?usp=drive_link" #voice-hispanic-1.opus
-    output = "./audio/voice-hispanic-1.opus"
+    output = "/project/audio/voice-hispanic-1.opus"
     download_audio(url,output)
     model = AudioSeal.load_generator("audioseal_wm_16bits")
     #recorded, sr = get_audio_from_path(output)
@@ -73,7 +75,7 @@ def audio_watermarking():
     torchaudio.save(watermark_path,watermarked_audio,sr)
     # TODO: handle paths in a better fashion
     subprocess.call(['python','NISQA/run_predict.py','--mode','predict_file','--pretrained_model',
-                     '/project/NISQA/weights/nisqa.tar','--deg','/project/'+watermark_path,'--output_dir','/project/results'])
+                     '/project/NISQA/weights/nisqa.tar','--deg',watermark_path,'--output_dir','/project/results'])
 
 def main():
     audio_watermarking()
