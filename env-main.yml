@@ -1,0 +1,20 @@
+name: audio-watermark-main
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - pip
+  - python
+  - pytorch
+  - scipy
+  - ffmpeg
+  - pydub
+  - torchaudio
+  - pip:
+    - numba
+    - numpy
+    - pyyaml
+    - gdown
+    - ffmpeg
+

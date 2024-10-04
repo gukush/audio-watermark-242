@@ -21,7 +21,7 @@ cd /project && conda activate audio-watermark
 ```
 
 ## Known issues
-Long setup times - the image after building is around 7GB. So in case of changes of env.yml it should be advised to install packages without reseting the image (either through conda or pip).
+Long setup times - the image after building is around 7GB. Solving conda environment takes some time. So in case of changes of env.yml it should be advised to install packages without reseting the image (either through conda or pip).
 To check current environment used in conda, run following command:
 ```
 conda env export --name audio-watermark > env-compare.yml.tmp
