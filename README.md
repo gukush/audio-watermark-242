@@ -22,7 +22,7 @@ Finally, to see sample workflow run following command
 ```
 cd /project && python simple_example.py
 ```
-This will produce a result in form of sample audio of watermarked voice that was cloned.
+This will produce a result in form of sample audio of watermarked voice that was cloned (accessible in audio folder).
 
 ## Other Info
 Results of NISQA predictions are in results/NISQA_results.csv
