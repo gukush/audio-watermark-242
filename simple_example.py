@@ -77,9 +77,26 @@ def audio_watermarking():
     subprocess.call(['python','NISQA/run_predict.py','--mode','predict_file','--pretrained_model',
                      '/project/NISQA/weights/nisqa.tar','--deg',watermark_path,'--output_dir','/project/results'])
 
+def detecting_from_clone():
+    input_path = "/project/audio/voice-hispanic-1-watermarked_mono.opus"
+    audio, sr = torchaudio.load(input_path)
+    audio = audio.unsqueeze(0)
+    detector = AudioSeal.load_detector(("audioseal_detector_16bits"))
+    result, message = detector.detect_watermark(audio,sample_rate=sr,message_threshold=0.5)
+    print(f"\n{input_path} audio has {result*100}% probability of being watermarked")
+    print(message)
+    input_path = "/project/audio/voice-hispanic-converted.wav"
+    audio, sr = torchaudio.load(input_path)
+    audio = audio.unsqueeze(0)
+    detector = AudioSeal.load_detector(("audioseal_detector_16bits"))
+    result, message = detector.detect_watermark(audio,sample_rate=sr,message_threshold=0.5)
+    print(f"\n{input_path} audio has {result*100}% probability of being watermarked")
+    print(message)
+
 def main():
     audio_watermarking()
     voice_cloning()
+    detecting_from_clone()
     #subprocess.call(['python','NISQA/run_predict.py','--mode','predict_file','--pretrained_model',
     #                 '/proj/NISQA/weights/nisqa.tar','--deg','/proj/'+output,'--output_dir','/proj/results'])
 
