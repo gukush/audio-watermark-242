@@ -7,3 +7,6 @@
 [submodule "OpenVoice"]
 	path = OpenVoice
 	url = https://github.com/gukush/OpenVoice.git
+[submodule "SilentCipher"]
+	path = SilentCipher
+	url = https://github.com/gukush/silentcipher.git

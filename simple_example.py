@@ -13,6 +13,9 @@ from scipy.io.wavfile import read as wav_read
 import subprocess
 from openvoice import se_extractor
 from openvoice.api import ToneColorConverter
+import silentcipher
+import librosa
+import soundfile
 
 # adapted from following collab notebook: https://colab.research.google.com/github/facebookresearch/audioseal/blob/master/examples/colab.ipynb#scrollTo=007c48cb
 # and this jupyter notebook: https://github.com/myshell-ai/OpenVoice/blob/main/demo_part3.ipynb
@@ -93,7 +96,18 @@ def detecting_from_clone():
     print(f"\n{input_path} audio has {result*100}% probability of being watermarked")
     print(message)
 
+def test_silentcipher():
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    model = silentcipher.get_model(model_type='44.1k',device=device)
+    audio, sr = librosa.load('/project/audio/voice-polish-1.wav')
+    encoded, sdr = model.encode_wav(audio, sr, [123, 234, 111, 222, 11])
+    soundfile.write("/project/audio/voice-polish-1-silentcipher.wav",encoded,sr,format='wav')
+    result = model.decode_wav(encoded,sr,phase_shift_decoding=False)
+    print(result)
+
+
 def main():
+    test_silentcipher()
     audio_watermarking()
     voice_cloning()
     detecting_from_clone()
