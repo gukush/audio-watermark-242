@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 class BaseWatermark(ABC):
     name = "base"
+    payload = None
     @abstractmethod
     def add_watermark(self,audio):
         """

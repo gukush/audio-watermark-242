@@ -1,11 +1,12 @@
 from audioseal import AudioSeal
 from base_watermark import BaseWatermark
 #import ffmpeg
-#import torch
+import torch
 import torchaudio
-
+# Not tested yet if it works properly
 class AudiosealWatermark(BaseWatermark):
     name = "audioseal"
+    payload = torch.Tensor([1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0])
     def __init__(self):
         self.detector = None
         self.model = None
@@ -23,7 +24,7 @@ class AudiosealWatermark(BaseWatermark):
         else: # assuming input is tuple of (audio,sr)
             audio, sr = input
         audio = audio.unsqueeze(0) # this adds new dimension which is batch size for model
-        watermark = self.model.get_watermark(audio,sample_rate=sr)
+        watermark = self.model.get_watermark(audio,sample_rate=sr,message=self.payload)
         watermarked_audio = audio + watermark
         if watermarked_audio.dim() == 3 and watermarked_audio.shape[0] == 1:
             watermarked_audio = watermarked_audio.squeeze(0)
@@ -42,6 +43,7 @@ class AudiosealWatermark(BaseWatermark):
         """
         Function that detects watermark.
         Input: tuple of (audio,sample rate)
+        Output: result - probability, message - encoded message
         """
         audio, sr = input
         if self.detector is None:

@@ -10,6 +10,7 @@ matplotlib==3.9.2
 ffmpeg-python==0.2.0
 gdown==5.2.0
 pydub==0.25.1
+soundfile==0.12.1
 wavmark==0.0.3
 -e ./audioseal
 -e ./OpenVoice
