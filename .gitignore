@@ -11,3 +11,4 @@ results/*.csv
 python-venv/
 *.pth
 models/
+config.py
