@@ -29,4 +29,4 @@ Here is additional specification:
 
 <#4> - each Voice cloning technique should have its' own code:
 - "1" - OpenVoice V2
-- "2" - TBD
+- "2" - ElevenLabs
