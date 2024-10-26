@@ -4,7 +4,7 @@ import soundfile
 from base_watermark import BaseWatermark
 import torch
 
-class SilentcipherWatermarket(BaseWatermark):
+class SilentcipherWatermark(BaseWatermark):
     name = "silentcipher"
     payload = [123, 234, 111, 222, 11]
     def __init__(self):

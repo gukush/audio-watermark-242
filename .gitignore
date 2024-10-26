@@ -12,3 +12,4 @@ python-venv/
 *.pth
 models/
 config.py
+tmp/
