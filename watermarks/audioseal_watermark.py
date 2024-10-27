@@ -1,12 +1,14 @@
 from audioseal import AudioSeal
-from base_watermark import BaseWatermark
+from .base_watermark import BaseWatermark
 #import ffmpeg
 import torch
 import torchaudio
 # Not tested yet if it works properly
 class AudiosealWatermark(BaseWatermark):
     name = "audioseal"
-    payload = torch.Tensor([1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0])
+    #tensor([[0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0],
+    #    [0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1]])
+    payload = torch.Tensor([[1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0]])
     def __init__(self):
         self.detector = None
         self.model = None
@@ -23,6 +25,7 @@ class AudiosealWatermark(BaseWatermark):
             audio, sr = self.preprocess(input,stereo)
         else: # assuming input is tuple of (audio,sr)
             audio, sr = input
+        print(audio.shape)
         # for stereo the channels are watermarked separately
         if stereo and audio.shape[0] == 2:
             left_channel = audio[0]
@@ -35,14 +38,20 @@ class AudiosealWatermark(BaseWatermark):
             left_channel_watermarked = left_channel + left_watermark
             right_channel_watermarked = right_channel + right_watermark
             watermarked_audio = torch.stack([left_channel_watermarked,right_channel_watermarked])
-            return watermarked_audio
+            return watermarked_audio.numpy(), sr
         else:
             audio = audio.unsqueeze(0) # this adds new dimension which is batch size for model
             watermark = self.model.get_watermark(audio,sample_rate=sr,message=self.payload)
+            print(watermark.shape)
             watermarked_audio = audio + watermark
+            watermarked_audio = watermarked_audio.cpu().detach()
             if watermarked_audio.dim() == 3 and watermarked_audio.shape[0] == 1:
                 watermarked_audio = watermarked_audio.squeeze(0)
-            return watermarked_audio
+            # Reshape to shape compatible with soundfile library (after converting to numpy array)
+            if watermarked_audio.dim() == 2 and watermarked_audio.shape[0] == 1:
+                watermarked_audio = watermarked_audio.view(-1, 1)
+            print(watermarked_audio.shape)
+            return watermarked_audio.numpy(), sr
 
     def preprocess(self, input,stereo=False):
         """

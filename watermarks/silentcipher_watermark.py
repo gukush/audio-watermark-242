@@ -1,7 +1,7 @@
 import silentcipher
 import librosa
 import soundfile
-from base_watermark import BaseWatermark
+from .base_watermark import BaseWatermark
 import torch
 
 class SilentcipherWatermark(BaseWatermark):
@@ -18,7 +18,7 @@ class SilentcipherWatermark(BaseWatermark):
         else:
             audio, sr = input
         watermarked_audio, sdr = self.model.encode_wav(audio,sr,self.payload)
-        return watermarked_audio
+        return watermarked_audio, sr
     def preprocess(self, input):
         audio, sr = librosa.load(input)
         return audio, sr

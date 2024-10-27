@@ -67,7 +67,7 @@ def download_audio(url,output):
 
 def audio_watermarking():
     url = "https://drive.google.com/file/d/1Ks8Wil0ZIq5oTa7DItGmpd8bI7jXcOJM/view?usp=drive_link" #voice-hispanic-1.opus
-    output = "/project/audio/voice-hispanic-1.opus"
+    output = "/project/audio/old/voice-hispanic-1.opus"
     download_audio(url,output)
     model = AudioSeal.load_generator("audioseal_wm_16bits")
     #recorded, sr = get_audio_from_path(output)
@@ -119,7 +119,7 @@ def test_silentcipher():
         print(f"Total Memory: {torch.cuda.get_device_properties(gpu_idx).total_memory / (1024 ** 2):.2f} MB")
         print(f"Memory Allocated: {torch.cuda.memory_allocated(gpu_idx) / (1024 ** 2):.2f} MB")
         print(f"Memory Cached: {torch.cuda.memory_reserved(gpu_idx) / (1024 ** 2):.2f} MB")
-    audio, sr = librosa.load('/project/audio/voice-polish-1.wav')
+    audio, sr = librosa.load('/project/audio/old/voice-polish-1.wav')
     encoded, sdr = model.encode_wav(audio, sr, [123, 234, 111, 222, 11])
     soundfile.write("/project/audio/voice-polish-1-silentcipher.wav",encoded,sr,format='wav')
     result = model.decode_wav(encoded,sr,phase_shift_decoding=False)
@@ -140,11 +140,11 @@ def main():
         #    with_stack=True,profile_memory=True) as prof:
         test_silentcipher()
         snapshot = tracemalloc.take_snapshot()
-        audio_watermarking()
-        snapshot = tracemalloc.take_snapshot()
-        voice_cloning()
-        snapshot = tracemalloc.take_snapshot()
-        detecting_from_clone()
+        #audio_watermarking()
+        #snapshot = tracemalloc.take_snapshot()
+        #voice_cloning()
+        #snapshot = tracemalloc.take_snapshot()
+        #detecting_from_clone()
         snapshot = tracemalloc.take_snapshot()
     #print(prof.key_averages().table(sort_by="self_cpu_memory_usage",row_limit=-1))
     #subprocess.call(['python','NISQA/run_predict.py','--mode','predict_file','--pretrained_model',

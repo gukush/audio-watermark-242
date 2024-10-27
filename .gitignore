@@ -13,3 +13,4 @@ python-venv/
 models/
 config.py
 tmp/
+log

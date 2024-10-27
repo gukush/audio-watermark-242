@@ -6,11 +6,14 @@ import argparse
 import logging
 from utils import create_watermark
 import numpy as np
-
+import soundfile as sf
+import torch
+import time
 #first empty line is used to indicate lack of watermark (no modifcation)
 SUPPORTED_WATERMARKS = ['','audioseal','wavmark','silentcipher']
 SUPPORTED_VOICE_CLONING = ['','openvoice']
 SUPPORTED_AUDIO_EXTENSIONS = ['.wav','.opus']
+ROOT_DIR = os.path.dirname(__file__)
 
 def main_old():
     audio_dir = 'audio'
@@ -32,14 +35,25 @@ def watermark_samples(samples,watermark_list):
         watermarks.append(create_watermark(watermark))
     for sample in samples:
         for watermark in watermarks:
-            watermarked_sample = watermark.add_watermark(sample)
-
+            filename = os.path.basename(sample)
+            logging.info(f"Processing watermark {watermark.name} for sample {filename}")
+            start = time.time()
+            with torch.no_grad():
+                watermarked_sample, sr = watermark.add_watermark(sample)
+            end = time.time()
+            duration = end - start
+            logging.info(f"Ended processing watermark {watermark.name} for sample {filename}, time: {duration}")
+            sample_name, ext = os.path.splitext(filename)
+            watermarked_path = os.path.join(ROOT_DIR,'audio','watermarked',f'{sample_name}_{watermark.name}{ext}')
+            sf.write(watermarked_path,watermarked_sample,sr)
 
 
 def main(args):
+    os.makedirs(os.path.join(ROOT_DIR,'audio','watermarked'),exist_ok=True)
     print(args)
     samples = parse_samples(args.samples)
     watermarks = parse_technique_list(args.watermarks,SUPPORTED_WATERMARKS)
+    watermark_samples(samples,watermarks)
     print(watermarks)
     pass
 
