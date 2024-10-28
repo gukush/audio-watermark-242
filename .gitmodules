@@ -10,3 +10,6 @@
 [submodule "SilentCipher"]
 	path = SilentCipher
 	url = https://github.com/gukush/silentcipher.git
+[submodule "coqui-ai-TTS"]
+	path = coqui-ai-TTS
+	url = https://github.com/idiap/coqui-ai-TTS.git
