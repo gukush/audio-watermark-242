@@ -10,6 +10,3 @@
 [submodule "SilentCipher"]
 	path = SilentCipher
 	url = https://github.com/gukush/silentcipher.git
-[submodule "VALL-E-X"]
-	path = VALL-E-X
-	url = https://github.com/Plachtaa/VALL-E-X.git
