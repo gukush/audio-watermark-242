@@ -13,3 +13,6 @@
 [submodule "coqui-ai-TTS"]
 	path = coqui-ai-TTS
 	url = https://github.com/idiap/coqui-ai-TTS.git
+[submodule "VALL-E-X"]
+	path = VALL-E-X
+	url = https://github.com/Plachtaa/VALL-E-X.git
