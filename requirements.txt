@@ -13,5 +13,24 @@ pydub==0.25.1
 soundfile==0.12.1
 wavmark==0.0.3
 build==1.2.2
+torchvision
+tokenizers
+encodec
+langid
+wget
+unidecode
+pyopenjtalk-prebuilt
+pypinyin
+inflect
+cn2an
+jieba
+eng_to_ipa
+openai-whisper
+gradio==3.41.2
+nltk
+sudachipy
+sudachidict_core
+vocos
 -e ./audioseal
 -e ./OpenVoice
+audiolm-pytorch
