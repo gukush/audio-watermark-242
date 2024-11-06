@@ -17,7 +17,9 @@ if __name__ == '__main__':
             "cutoff": 1000,
             "filter_type": "high",
             "order": 5
-        }
+        },
+        "sampling_rate": 14100,
+        "bit_depth": 4
     }
 
     # Apply selected effects

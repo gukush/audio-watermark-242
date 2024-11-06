@@ -4,20 +4,23 @@ import numpy as np
 import soundfile as sf
 from scipy.signal import butter, lfilter
 
+
 class Distortions:
     # Universal dictionary for encoding all modifications
     POS_DISTORTIONS_DICT = {
         'pitch_shift': '1',
         'time_stretch': '2',
-        'domain_filter': '3'
-        ###:'4'
+        'domain_filter': '3',
+        'sampling_rate': '4',
+        'bit_depth': '5'
+
         ####'5'
     }
 
     def __init__(self, file_path):
         # Load the audio file
         self.file_path = file_path
-        self.output_filename = self.file_path #changes with adding distortions
+        self.output_filename = self.file_path  # changes with adding distortions
         self.y, self.sr = librosa.load(self.file_path, sr=None)
 
     def pitch_shift(self, n_steps):
@@ -50,6 +53,34 @@ class Distortions:
         b, a = butter(order, normal_cutoff, btype=filter_type, analog=False)
         self.y = lfilter(b, a, self.y)
 
+    def set_sampling_rate(self, new_sr):
+        """
+        Changes the sampling rate of the audio by resampling.
+
+        :param new_sr: The new sampling rate to apply.
+        :return: None
+        """
+        if new_sr != self.sr:
+            self.y = librosa.resample(self.y, orig_sr=self.sr, target_sr=new_sr)
+            self.sr = new_sr
+
+    def reduce_bit_depth(self, bit_depth):
+        """
+        Reduces the bit depth of the audio by quantizing it.
+
+        :param bit_depth: The new bit depth to apply (e.g., 8, 12, 16).
+        :return: None
+        """
+        max_val = np.max(np.abs(self.y))  # Normalize to avoid overflow
+        y_normalized = self.y / max_val  # Scale signal to -1 to 1
+
+        # Calculate the number of levels for quantization
+        num_levels = 2 ** bit_depth
+        y_quantized = np.round(y_normalized * (num_levels / 2)) / (num_levels / 2)
+        print(y_quantized, max_val, self.y)
+        # Scale back to the original amplitude range
+        self.y = y_quantized * max_val
+
     def adjust_file_name(self, attributes):
         """
         Encode applied distortions in the output file name
@@ -64,7 +95,7 @@ class Distortions:
         if applied_effect_values:
             # Join suffixes to create the new filename
             suffix_str = "_".join(applied_effect_values)
-            self.output_filename =  f"{name}_distorted_{suffix_str}.{ext}"
+            self.output_filename = f"{name}_distorted_{suffix_str}.{ext}"
 
     def apply_effects(self, attributes):
         """
@@ -92,7 +123,17 @@ class Distortions:
             print(f"Applying {filter_type} filter with cutoff {cutoff} Hz and order {order}.")
             self.domain_filter(cutoff, filter_type, order)
 
-        self.adjust_file_name(attributes) #Change output file name
+        if 'sampling_rate' in attributes:
+            new_sr = attributes['sampling_rate']
+            print(f"Changing sampling rate to {new_sr} Hz.")
+            self.set_sampling_rate(new_sr)
+
+        if 'bit_depth' in attributes:
+            bit_depth = attributes['bit_depth']
+            print(f"Reducing bit depth to {bit_depth} bits.")
+            self.reduce_bit_depth(bit_depth)
+
+        self.adjust_file_name(attributes)  # Change output file name
 
     def plot_wave(self, filename, x_start=0, x_end=100, x_label='Time', y_label='Y-axis'):
         """
@@ -122,7 +163,6 @@ class Distortions:
         plt.close()  # Close the plot to free memory
 
         print(f"Plot saved as {filename}")
-
 
     def save_audio(self, output_path):
         """
