@@ -17,5 +17,5 @@ encode_message = "242"
 tone_color_converter.convert(audio_src_path = src_path,
     src_se = source_se,
     tgt_se=target_se,
-    output_path=os.path.join(project_root,'audio','old','voice-hispanic-converted.wav'),
+    output_path=os.path.join(project_root,'audio','old','voice-hispanic-1_openvoice.wav'),
     message=encode_message)

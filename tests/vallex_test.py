@@ -15,4 +15,4 @@ Hello, my name is Nose. And uh, and I like hamburger. Hahaha... But I also have 
 audio_array = generate_audio(text_prompt)
 
 # save audio to disk
-write_wav("vallex_generation.wav", SAMPLE_RATE, audio_array)
+write_wav("./audio/vallex_generation.wav", SAMPLE_RATE, audio_array)

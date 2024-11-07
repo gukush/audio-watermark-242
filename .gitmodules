@@ -19,3 +19,6 @@
 [submodule "VALL-E-X"]
 	path = VALL-E-X
 	url = https://github.com/Plachtaa/VALL-E-X.git
+[submodule "fairseq"]
+	path = fairseq
+	url = https://github.com/espnet/fairseq.git
