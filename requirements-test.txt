@@ -60,6 +60,7 @@ tensorboardx
 setuptools>=18.0
 einops>=0.6.0
 tokenizers
+audiolm-pytorch
 -e ./audioseal
 -e ./OpenVoice
 -e ./coqui-ai-TTS

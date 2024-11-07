@@ -1,0 +1,32 @@
+diff --git a/hubert/pre_kmeans_hubert.py b/hubert/pre_kmeans_hubert.py
+index e7a76a4..574a5b7 100644
+--- a/hubert/pre_kmeans_hubert.py
++++ b/hubert/pre_kmeans_hubert.py
+@@ -21,7 +21,8 @@ from audiolm_pytorch.utils import curtail_to_multiple
+ 
+ import logging
+ logging.root.setLevel(logging.ERROR)
+-
++from fairseq import checkpoint_utils
++from fairseq.models.hubert import HubertModel
+ 
+ def exists(val):
+     return val is not None
+@@ -57,10 +58,13 @@ class CustomHubert(nn.Module):
+ 
+         assert model_path.exists(), f'path {checkpoint_path} does not exist'
+ 
+-        checkpoint = torch.load(checkpoint_path)
+-        load_model_input = {checkpoint_path: checkpoint}
+-        model, *_ = fairseq.checkpoint_utils.load_model_ensemble_and_task(load_model_input)
+-
++        #checkpoint = torch.load(checkpoint_path)
++        #load_model_input = {checkpoint_path: checkpoint}
++        #model, *_ = checkpoint_utils.load_model_ensemble_and_task(load_model_input)
++        checkpoint = torch.load(checkpoint_path, map_location='cpu')
++        model = HubertModel.build_model(checkpoint['cfg']['model'])
++        model.load_state_dict(checkpoint['model'], strict=False)
++        model.eval()
+         if device is not None:
+             model[0].to(device)
+ 
