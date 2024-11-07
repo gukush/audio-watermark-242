@@ -2,7 +2,7 @@ import librosa
 import matplotlib.pyplot as plt
 import numpy as np
 import soundfile as sf
-from scipy.signal import butter, lfilter
+from scipy.signal import butter, lfilter, fftconvolve
 
 
 class Distortions:
@@ -22,6 +22,20 @@ class Distortions:
         self.file_path = file_path
         self.output_filename = self.file_path  # changes with adding distortions
         self.y, self.sr = librosa.load(self.file_path, sr=None)
+    
+    def reverberation(self, decay_f, delay_f):
+        delay = int(delay_f * self.sr)
+        decay = decay_f
+
+        echo_data = np.zeros_like(self.y)
+        
+        for i in range(delay, len(self.y)):
+            echo_data[i] = self.y[i] + decay * self.y[i - delay]
+        
+        # Normalization
+        #max_val = np.max(np.abs(echo_data))
+        #echo_data = echo_data / max_val * 0.5
+        self.y = echo_data
 
     def pitch_shift(self, n_steps):
         """
@@ -122,6 +136,13 @@ class Distortions:
             order = filter_params.get('order', 5)  # Optional, default 5
             print(f"Applying {filter_type} filter with cutoff {cutoff} Hz and order {order}.")
             self.domain_filter(cutoff, filter_type, order)
+        
+        if 'reverberation' in attributes:
+            filter_params = attributes['reverberation']
+            decay = filter_params['decay']
+            delay = filter_params['delay']
+            print(f"Applying reverberation with {decay} decay and {delay} delay.")
+            self.reverberation(decay, delay)
 
         if 'sampling_rate' in attributes:
             new_sr = attributes['sampling_rate']

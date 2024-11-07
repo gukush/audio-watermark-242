@@ -3,7 +3,7 @@ from distortions import Distortions
 if __name__ == '__main__':
     # Example usage
     file_path = "unofficial_corpus\\voice-british-1.wav" #TO BE SET
-    output_path = 'Src'         #TO BE SET
+    output_path = 'out'         #TO BE SET
 
     # Create an instance of the Distortions class
     distort = Distortions(file_path)
@@ -19,7 +19,11 @@ if __name__ == '__main__':
             "order": 5
         },
         "sampling_rate": 14100,
-        "bit_depth": 4
+        "bit_depth": 4,
+        "reverberation" : {
+            "decay" : 0.5,
+            "delay" : 0.2
+        }
     }
 
     # Apply selected effects
