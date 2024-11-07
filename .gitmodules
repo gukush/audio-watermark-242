@@ -15,7 +15,7 @@
 	url = https://github.com/idiap/coqui-ai-TTS.git
 [submodule "fairseq"]
 	path = fairseq
-	url = https://github.com/facebookresearch/fairseq.git
+	url = https://github.com/espnet/fairseq.git
 [submodule "bark_with_voice_clone"]
 	path = bark_with_voice_clone
 	url = https://github.com/serp-ai/bark-with-voice-clone.git
