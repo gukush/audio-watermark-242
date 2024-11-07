@@ -1,3 +1,7 @@
+import sys
+import os
+os.chdir('/project/vall_e_x/')
+sys.path.append('/project/vall_e_x/')
 from utils.generation import SAMPLE_RATE, generate_audio, preload_models
 from scipy.io.wavfile import write as write_wav
 

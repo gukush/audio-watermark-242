@@ -22,10 +22,10 @@ hubert_manager.make_sure_tokenizer_installed()
 from bark_with_voice_clone.hubert.pre_kmeans_hubert import CustomHubert
 from bark_with_voice_clone.hubert.customtokenizer import CustomTokenizer
 
-hubert_model = CustomHubert(checkpoint_path='/project/data/models/hubert/hubert.pt').to(device)
-tokenizer = CustomTokenizer(checkpoint_path='/project/data/models/hubert/hubert.pt').to(device)
+hubert_model = CustomHubert(checkpoint_path='/project/audio-watermark-242/data/models/hubert/hubert.pt').to(device)
+tokenizer = CustomTokenizer(checkpoint_path='/project/audio-watermark-242/data/models/hubert/hubert.pt').to(device)
 
-audio_filepath = '/project/audio/old/voice-polish-1.wav'
+audio_filepath = '/project/audio-watermark-242/audio/old/voice-polish-1.wav'
 audio, sr = torchaudio.load(audio_filepath)
 wav = convert_audio(audio,sr,model.sample_rate, model.channels)
 wav = wav.to(device)
@@ -44,10 +44,21 @@ voice_name = 'output'
 
 output_path = submodule_path+'bark/assets/prompts/' + voice_name + '.npz'
 np.savez(output_path, fine_prompt=codes, coarse_prompt=codes[:2, :], semantic_prompt=semantic_tokens)
-converted_path = '/project/audio/old/voice_cloned_bark.wav'
+converted_path = '/project/audio-watermark-242/audio/old/voice_cloned_bark.wav'
 
-from bark_with_voice_clone.bark.api import generate_audio
+from bark_with_voice_clone.bark.api import generate_audio, semantic_to_waveform
 from transformers import BertTokenizer
 from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic
 
-# Enter your prompt and speaker here
+
+trasnfer_voice_filepath = '/project/audio-watermark-242/audio/old/voice-hispanic-1.wav'
+audio_2, sr_2 = torchaudio.load(audio_filepath)
+wav_2 = convert_audio(audio_2,sr_2,model.sample_rate, model.channels)
+wav_2 = wav_2.to(device)
+
+semantic_vectors_2 = hubert_model.forward(wav_2,input_sample_hz=model.sample_rate)
+semantic_tokens_2 = tokenizer.get_token(semantic_vectors_2)
+
+
+cloned_audio = semantic_to_waveform(semantic_tokens_2,history_prompt='output')
+

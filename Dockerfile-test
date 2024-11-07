@@ -1,0 +1,19 @@
+FROM python:3.11-bookworm
+RUN apt update
+RUN apt install -y ffmpeg curl
+COPY requirements-test.txt /project/
+COPY audioseal /project/audioseal
+COPY OpenVoice /project/OpenVoice
+COPY SilentCipher /project/SilentCipher
+COPY VALL-E-X /project/VALL-E-X
+COPY coqui-ai-TTS /project/coqui-ai-TTS
+COPY fairseq /project/fairseq
+COPY bark-with-voice-clone /project/bark-with-voice-clone
+WORKDIR /project
+RUN pip install -r requirements-test.txt
+RUN curl -o checkpoints.zip https://myshell-public-repo-host.s3.amazonaws.com/openvoice/checkpoints_v2_0417.zip \
+    && unzip checkpoints.zip -d /models \
+    && rm checkpoints.zip
+WORKDIR /project/SilentCipher
+RUN python -m build
+RUN pip install dist/*.whl

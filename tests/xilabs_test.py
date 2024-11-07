@@ -16,8 +16,8 @@ sts_url = f"https://api.elevenlabs.io/v1/speech-to-speech/{DANIEL_VOICE_ID}/stre
 response = requests.get(url, headers=headers)
 data = response.json()
 
-AUDIO_FILE_PATH = "/project/audio/voice-hispanic-1-watermarked_mono.mp3"
-OUTPUT_PATH = "/project/audio/voice-hispanic-1-watermarked_mono-xilabs-daniel.mp3"
+AUDIO_FILE_PATH = "/project/audio/old/voice-hispanic-1.wav"
+OUTPUT_PATH = "/project/audio/old/voice-hispanic-1-xilabs-daniel.wav"
 
 data = {
     "model_id": "eleven_multilingual_sts_v2",

@@ -1,5 +1,7 @@
 import torch
 from TTS.api import TTS
+import os
 
-tts = TTS(model_name="voice_conversion_models/multilingual/vctk/freevc24", progress_bar=False).to("cpu")
-tts.voice_conversion_to_file(source_wav="/project/audio/voice-hispanic-1.wav", target_wav="/project/audio/voice-polish-8.wav", file_path="output.wav")
+project_root =  os.path.join(os.path.dirname(__file__),'..')
+tts = TTS(model_name="voice_conversion_models/multilingual/vctk/freevc24", progress_bar=True).to("cpu")
+tts.voice_conversion_to_file(source_wav=os.path.join(project_root,'audio','old','voice-hispanic-1.wav'), target_wav=os.path.join(project_root,'audio','old','voice-polish-8.wav'), file_path=os.path.join(project_root,'audio','output.wav'))
