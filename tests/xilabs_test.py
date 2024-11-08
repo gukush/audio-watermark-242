@@ -1,5 +1,9 @@
 import requests
 import json
+import os
+project_root = os.path.join(os.path.dirname(__file__),'..')
+import sys
+sys.path.append(project_root)
 from config import XI_API_KEY
 
 url = "https://api.elevenlabs.io/v1/voices"

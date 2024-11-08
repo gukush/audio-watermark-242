@@ -17,3 +17,4 @@ RUN curl -o checkpoints.zip https://myshell-public-repo-host.s3.amazonaws.com/op
 WORKDIR /project/SilentCipher
 RUN python -m build
 RUN pip install dist/*.whl
+WORKDIR /project

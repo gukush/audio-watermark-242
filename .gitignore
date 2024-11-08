@@ -12,7 +12,7 @@ python-venv/
 *.pth
 models/
 config.py
-*/config.py
 tmp/
 log
 *.png
+config/config.py
