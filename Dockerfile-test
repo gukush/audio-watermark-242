@@ -14,6 +14,10 @@ RUN pip install -r requirements-test.txt
 RUN curl -o checkpoints.zip https://myshell-public-repo-host.s3.amazonaws.com/openvoice/checkpoints_v2_0417.zip \
     && unzip checkpoints.zip -d /models \
     && rm checkpoints.zip
+WORKDIR /project/data/models/suno
+RUN curl -o text_2.pt https://dl.suno-models.io/bark/models/v0/text_2.pt
+RUN curl -o coarse_2.pt https://dl.suno-models.io/bark/models/v0/coarse_2.pt
+RUN curl -o fine_2.pt https://dl.suno-models.io/bark/models/v0/fine_2.pt
 WORKDIR /project/SilentCipher
 RUN python -m build
 RUN pip install dist/*.whl

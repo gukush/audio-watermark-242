@@ -9,7 +9,7 @@ audio_mono = audio.mean(dim=0,keepdim=True)
 audios = audio_mono.unsqueeze(0)
 watermark = model.get_watermark(audios,sample_rate=sr)
 watermarked_audio = audios + watermark
-watermark_path = output.replace('.wav','-watermarked_mono.wav')
+watermark_path = output.replace('.wav','_audioseal.wav')
 if watermarked_audio.dim() == 3 and watermarked_audio.shape[0] == 1:
     watermarked_audio = watermarked_audio.squeeze(0)
 torchaudio.save(watermark_path,watermarked_audio,sr)

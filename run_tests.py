@@ -1,6 +1,7 @@
 import os
 import subprocess
 import gdown
+import signal
 
 def download_audio(url,output):
     if not os.path.isfile(output):
@@ -39,9 +40,15 @@ for test_file in os.listdir('./tests'):
                 capture_output=True,
                 check=True
             )
-            passed_tests.append(test_file)
-
-            print(f"Test passed: {test_file}")
+            if result.returncode < 0:
+                signal_num = -result.returncode
+                if signal_num == signal.SIGKILL:
+                    print(f"Test failed: {test_file} - killed")
+                else:
+                    print(f"Test had bad returncode: {test_file}")
+            else:
+                passed_tests.append(test_file)
+                print(f"Test passed: {test_file}")
             print("------------------------")
             print(result.stdout)
             print("------------------------")

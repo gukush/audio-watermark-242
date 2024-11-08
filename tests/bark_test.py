@@ -1,6 +1,6 @@
 import os
 import sys
-
+# This test requires a lot of resources
 root_path = os.path.join(os.path.dirname(__file__),'..')#,'bark_with_voice_clone')
 sys.path.append(root_path)
 submodule_path = os.path.join(root_path,'bark-with-voice-clone')
@@ -60,8 +60,7 @@ semantic_vectors_2 = hubert_model.forward(wav_2,input_sample_hz=model.sample_rat
 semantic_tokens_2 = tokenizer.get_token(semantic_vectors_2)
 semantic_tokens_2 = semantic_tokens_2.cpu().numpy()
 
-
-#try loading models earlier?
-breakpoint()
 cloned_audio = semantic_to_waveform(semantic_tokens_2,history_prompt=voice_name)
-
+audio_output_path = os.path.join(root_path,'audio','old','voice-polish-1_bark.wav')
+import soundfile
+soundfile.write(audio_output_path,cloned_audio,sample_rate=24000)
