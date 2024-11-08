@@ -14,4 +14,7 @@ if watermarked_audio.dim() == 3 and watermarked_audio.shape[0] == 1:
     watermarked_audio = watermarked_audio.squeeze(0)
 torchaudio.save(watermark_path,watermarked_audio,sr)
 detector = AudioSeal.load_detector(("audioseal_detector_16bits"))
-result, message = detector.detect_watermark(watermarked_audio,sample_rate=sr)
+batch_watermarked_audio = watermarked_audio.unsqueeze(0)
+result, message = detector.detect_watermark(batch_watermarked_audio,sample_rate=sr)
+print(f"result: {result}")
+print(f"message: {message}")
