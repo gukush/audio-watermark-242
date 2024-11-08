@@ -15,7 +15,7 @@
 	url = https://github.com/idiap/coqui-ai-TTS.git
 [submodule "bark-with-voice-clone"]
 	path = bark-with-voice-clone
-	url = https://github.com/serp-ai/bark-with-voice-clone.git
+	url = https://github.com/gukush/bark-with-voice-clone.git
 [submodule "VALL-E-X"]
 	path = VALL-E-X
 	url = https://github.com/Plachtaa/VALL-E-X.git
