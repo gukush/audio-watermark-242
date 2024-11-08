@@ -15,4 +15,4 @@ config.py
 tmp/
 log
 *.png
-config/config.py
+config/config_local.py
