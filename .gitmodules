@@ -22,3 +22,6 @@
 [submodule "fairseq"]
 	path = fairseq
 	url = https://github.com/gukush/fairseq.git
+[submodule "IMS-Toucan"]
+	path = IMS-Toucan
+	url = https://github.com/DigitalPhonetics/IMS-Toucan
