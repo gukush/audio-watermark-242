@@ -66,6 +66,8 @@ sounddevice>=0.4.5
 speechbrain==0.5.13
 dotwiz==0.4.0
 dragonmapper>=0.2.6
+kornia
+audiomentations
 -e ./audioseal
 -e ./OpenVoice
 -e ./coqui-ai-TTS
