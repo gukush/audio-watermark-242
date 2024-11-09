@@ -61,6 +61,11 @@ setuptools>=18.0
 einops>=0.6.0
 tokenizers
 audiolm-pytorch
+pyloudnorm>=0.1.0
+sounddevice>=0.4.5
+speechbrain==0.5.13
+dotwiz==0.4.0
+dragonmapper>=0.2.6
 -e ./audioseal
 -e ./OpenVoice
 -e ./coqui-ai-TTS
