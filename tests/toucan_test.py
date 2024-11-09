@@ -31,7 +31,7 @@ def polish_test(version, model_id=None, exec_device="cpu", speaker_reference=Non
 if __name__ == '__main__':
     exec_device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"running on {exec_device}")
-    os.makedirs(f"{project_root}/audios/speaker_references/", exist_ok=True)
-    merged_speaker_references = ["audios/speaker_references/" + ref for ref in
-                                     os.listdir("audios/speaker_references/")]
+    os.makedirs(f"{project_root}/audio/speaker_references/", exist_ok=True)
+    merged_speaker_references = [f"{project_root}/audio/speaker_references/" + ref for ref in
+                                     os.listdir(f"{project_root}/audio/speaker_references/")]
     polish_test(version="version_11", model_id=None, exec_device=exec_device, speaker_reference=merged_speaker_references if merged_speaker_references != [] else None)
