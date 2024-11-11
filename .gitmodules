@@ -22,3 +22,6 @@
 [submodule "VALL-E-X"]
 	path = VALL-E-X
 	url = https://github.com/Plachtaa/VALL-E-X.git
+[submodule "vits"]
+	path = vits
+	url = ./vits
