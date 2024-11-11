@@ -24,4 +24,4 @@
 	url = https://github.com/Plachtaa/VALL-E-X.git
 [submodule "vits"]
 	path = vits
-	url = ./vits
+	url = https://github.com/jaywalnut310/vits.git
