@@ -1,5 +1,5 @@
 from watermarks import SimpleWatermark, AudiosealWatermark, WavmarkWatermark, SilentcipherWatermark
-from voice_cloning import CoquittsCloner
+from voice_cloning import CoquittsCloner, OpenvoiceCloner
 
 def create_watermark(watermark_name):
     if watermark_name == "audioseal":
@@ -13,3 +13,5 @@ def create_watermark(watermark_name):
 def create_clone(clone_name):
     if clone_name == "coquitts":
         return CoquittsCloner()
+    if clone_name == "openvoice":
+        return OpenvoiceCloner()

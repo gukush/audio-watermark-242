@@ -29,13 +29,18 @@ def main_old():
     quality = correlation_metric.evaluate_quality(audio,watermarked_audio)#evaluate_quality(original_audio, watermarked_audio)
     print(f"Quality of the watermarked audio (correlation coefficient): {quality}")
 
-def watermark_samples(samples,watermark_list):
+def watermark_samples(samples,watermark_list,override=False):
     watermarks = []
     for watermark in watermark_list:
         watermarks.append(create_watermark(watermark))
     for sample in samples:
         for watermark in watermarks:
             filename = os.path.basename(sample)
+            sample_name, ext = os.path.splitext(filename)
+            watermarked_path = os.path.join(ROOT_DIR,'audio','watermarked',f'{sample_name}_{watermark.name}{ext}')
+            if os.path.isfile(watermarked_path) and not override:
+                logging.info(f"File {watermarked_path} already exists, skipping. Use --override option to change the behavior.")
+                continue
             logging.info(f"Processing watermark {watermark.name} for sample {filename}")
             start = time.time()
             with torch.no_grad():
@@ -43,12 +48,10 @@ def watermark_samples(samples,watermark_list):
             end = time.time()
             duration = end - start
             logging.info(f"Ended processing watermark {watermark.name} for sample {filename}, time: {duration}")
-            sample_name, ext = os.path.splitext(filename)
-            watermarked_path = os.path.join(ROOT_DIR,'audio','watermarked',f'{sample_name}_{watermark.name}{ext}')
             sf.write(watermarked_path,watermarked_sample,sr)
 
 
-def voice_clone_samples(samples,clone_list,voices_list):
+def voice_clone_samples(samples,clone_list,voices_list, override=False):
     clones = []
     for clone in clone_list:
         clones.append(create_clone(clone))
@@ -57,6 +60,11 @@ def voice_clone_samples(samples,clone_list,voices_list):
         for sample in samples:
             filename = os.path.basename(sample)
             for clone in clones:
+                sample_name, ext = os.path.splitext(filename)
+                cloned_path = os.path.join(ROOT_DIR,'audio','clone',f'{sample_name}_{clone.name}_{voice_name}{ext}')
+                if os.path.isfile(cloned_path) and not override:
+                    logging.info(f"File {cloned_path} already exists, skipping. Use --override option to change the behavior.")
+                    continue
                 logging.info(f"Processing voice cloning {clone.name} for sample {filename} with voice {voice_name}")
                 start = time.time()
                 with torch.no_grad():
@@ -64,8 +72,6 @@ def voice_clone_samples(samples,clone_list,voices_list):
                 end = time.time()
                 duration = end - start
                 logging.info(f"Ended voice cloning {clone.name} for sample {filename} with voice {voice_name}, time: {duration}")
-                sample_name, ext = os.path.splitext(filename)
-                cloned_path = os.path.join(ROOT_DIR,'audio','clone',f'{sample_name}_{clone.name}_{voice_name}{ext}')
                 sf.write(cloned_path,cloned_audio,sr)
 
 def main(args):
@@ -76,9 +82,9 @@ def main(args):
     watermarks = parse_technique_list(args.watermarks,SUPPORTED_WATERMARKS)
     clones = parse_technique_list(args.clones,SUPPORTED_VOICE_CLONING)
     if watermarks is not None:
-        watermark_samples(samples,watermarks)
+        watermark_samples(samples,watermarks,args.override)
     if clones is not None:
-        voice_clone_samples(samples,clones,voices)
+        voice_clone_samples(samples,clones,voices,args.override)
     print(watermarks)
     pass
 
@@ -134,6 +140,7 @@ if __name__ == "__main__":
     parser.add_argument("--watermarks",help="String comma-delimioted of numbers or names or simply \"all\" that indicate watermarking techniques to use in pipeline")
     parser.add_argument("--clones",help="String comma-delimioted of numbers or names or simply \"all\" that indicate voice cloning techniques to use in pipeline",required=False)
     parser.add_argument("--voices",nargs='+',help="Input audio file or directory with audio files that will be used as voice for voice cloning",required=False)
+    parser.add_argument("--override",action='store_true')
     args = parser.parse_args()
     #parser.add_argument("--distortions",help="String comma-delimioted of numbers or names or simply \"all\" that indicate watermarking techniques to use in pipeline")
     logging.basicConfig(
