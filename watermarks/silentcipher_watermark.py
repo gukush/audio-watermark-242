@@ -1,8 +1,9 @@
 import silentcipher
 import librosa
-import soundfile
 from .base_watermark import BaseWatermark
 import torch
+from config import MAX_SIZE_SILENTCIPHER
+import numpy as np
 
 class SilentcipherWatermark(BaseWatermark):
     name = "silentcipher"
@@ -17,7 +18,23 @@ class SilentcipherWatermark(BaseWatermark):
             audio, sr = self.preprocess(input)
         else:
             audio, sr = input
-        watermarked_audio, sdr = self.model.encode_wav(audio,sr,self.payload)
+        num_samples = audio.shape[0]
+        print(f"num samples: {num_samples}")
+        print(MAX_SIZE_SILENTCIPHER)
+        if num_samples > MAX_SIZE_SILENTCIPHER:
+            parts = []
+            breakpoint()
+            for start in range(0,num_samples,MAX_SIZE_SILENTCIPHER):
+                end = min(start + MAX_SIZE_SILENTCIPHER, num_samples)
+                parts.append(audio[start:end])
+            processed_parts = []
+            for part in parts:
+                watermarked_part, sdr = self.model.encode_wav(part,sr,self.payload)
+                processed_parts.append(watermarked_part)
+            breakpoint()
+            watermarked_audio = np.concatenate(processed_parts)
+        else:
+            watermarked_audio, sdr = self.model.encode_wav(audio,sr,self.payload)
         return watermarked_audio, sr
     def preprocess(self, input):
         audio, sr = librosa.load(input)

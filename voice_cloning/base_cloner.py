@@ -18,3 +18,10 @@ class BaseCloner(ABC):
         To be implemented by derived class.
         """
         pass
+    @abstractmethod
+    def clone_voice_to_sample(self,sample,voice,output):
+        """
+        For transforming voice from one sample to previously extracted one.
+        To be implemented by derived class.
+        """
+        pass

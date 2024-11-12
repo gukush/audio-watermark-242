@@ -3,7 +3,7 @@ import torch
 import soundfile
 import numpy as np
 from .base_watermark import BaseWatermark
-import librosa
+from wavmark.utils import file_reader
 # Not tested yet if it works properly
 class WavmarkWatermark(BaseWatermark):
     name = "wavmark"
@@ -20,17 +20,18 @@ class WavmarkWatermark(BaseWatermark):
         else:
             audio, sr = input
         print(audio.shape)
-        watermarked_audio, sr = wavmark.encode_watermark(self.model,audio,self.payload,show_progress=True)
-        return watermarked_audio, sr
+        watermarked_audio, _ = wavmark.encode_watermark(self.model,audio,self.payload,show_progress=True)
+        return watermarked_audio, 16000
     def preprocess(self, input,stereo=False):
-        audio, sr = soundfile.read(input)
-        audio_resampled = librosa.resample(audio, orig_sr=sr, target_sr=16000)
+        audio = file_reader.read_as_single_channel(input,aim_sr=16000)
+        #audio, sr = soundfile.read(input)
+        #audio_resampled = librosa.resample(audio, orig_sr=sr, target_sr=16000)
         #print(audio.shape)
         #if not stereo:
         #    audio_mono = audio.mean(axis=1,keepdims=True)
         #    return audio_mono, sr
         #else:
-        return audio_resampled, 16000
+        return audio, 16000
     def detect_watermark(self, audio):
         if self.model is None:
             device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')

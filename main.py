@@ -4,14 +4,14 @@ from pydub import AudioSegment
 from metrics import CorrelationMetric
 import argparse
 import logging
-from utils import create_watermark
+from utils import create_watermark, create_clone
 import numpy as np
 import soundfile as sf
 import torch
 import time
 #first empty line is used to indicate lack of watermark (no modifcation)
 SUPPORTED_WATERMARKS = ['','audioseal','wavmark','silentcipher']
-SUPPORTED_VOICE_CLONING = ['','openvoice']
+SUPPORTED_VOICE_CLONING = ['','openvoice','coquitts']
 SUPPORTED_AUDIO_EXTENSIONS = ['.wav','.opus']
 ROOT_DIR = os.path.dirname(__file__)
 
@@ -48,16 +48,43 @@ def watermark_samples(samples,watermark_list):
             sf.write(watermarked_path,watermarked_sample,sr)
 
 
+def voice_clone_samples(samples,clone_list,voices_list):
+    clones = []
+    for clone in clone_list:
+        clones.append(create_clone(clone))
+    for voice in voices_list:
+        voice_name, _ = os.path.splitext(os.path.basename(voice))
+        for sample in samples:
+            filename = os.path.basename(sample)
+            for clone in clones:
+                logging.info(f"Processing voice cloning {clone.name} for sample {filename} with voice {voice_name}")
+                start = time.time()
+                with torch.no_grad():
+                    cloned_audio, sr = clone.clone_voice_to_sample(sample,voice)
+                end = time.time()
+                duration = end - start
+                logging.info(f"Ended voice cloning {clone.name} for sample {filename} with voice {voice_name}, time: {duration}")
+                sample_name, ext = os.path.splitext(filename)
+                cloned_path = os.path.join(ROOT_DIR,'audio','clone',f'{sample_name}_{clone.name}_{voice_name}{ext}')
+                sf.write(cloned_path,cloned_audio,sr)
+
 def main(args):
     os.makedirs(os.path.join(ROOT_DIR,'audio','watermarked'),exist_ok=True)
     print(args)
     samples = parse_samples(args.samples)
+    voices = parse_samples(args.voices)
     watermarks = parse_technique_list(args.watermarks,SUPPORTED_WATERMARKS)
-    watermark_samples(samples,watermarks)
+    clones = parse_technique_list(args.clones,SUPPORTED_VOICE_CLONING)
+    if watermarks is not None:
+        watermark_samples(samples,watermarks)
+    if clones is not None:
+        voice_clone_samples(samples,clones,voices)
     print(watermarks)
     pass
 
 def parse_technique_list(str,supported_list):
+    if str is None:
+        return None
     if str == 'all':
         return supported_list[1:] # skip empty string
     used_techniques = []
@@ -93,11 +120,11 @@ def parse_samples(samples_list):
                     else:
                         print(f"Warning {file_path} is not a supported audio file")
         elif os.path.isfile(sample):
-            extension = os.path.splitext(file_path)[1]
+            extension = os.path.splitext(sample)[1]
             if extension in SUPPORTED_AUDIO_EXTENSIONS:
-                file_list.append(file_path)
+                file_list.append(sample)
             else:
-                print(f"Warning {file_path} is not a supported audio file")
+                print(f"Warning {sample} is not a supported audio file")
     print(file_list)
     return file_list
 
@@ -105,7 +132,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="CLI Tool for running audio watermarking and voice cloning pipeline")
     parser.add_argument("--samples",nargs='+',help="Input audio file or directory with audio files that will be used for watermarking")
     parser.add_argument("--watermarks",help="String comma-delimioted of numbers or names or simply \"all\" that indicate watermarking techniques to use in pipeline")
-    parser.add_argument("--clones",help="String comma-delimioted of numbers or names or simply \"all\" that indicate voice cloning techniques to use in pipeline")
+    parser.add_argument("--clones",help="String comma-delimioted of numbers or names or simply \"all\" that indicate voice cloning techniques to use in pipeline",required=False)
+    parser.add_argument("--voices",nargs='+',help="Input audio file or directory with audio files that will be used as voice for voice cloning",required=False)
     args = parser.parse_args()
     #parser.add_argument("--distortions",help="String comma-delimioted of numbers or names or simply \"all\" that indicate watermarking techniques to use in pipeline")
     logging.basicConfig(

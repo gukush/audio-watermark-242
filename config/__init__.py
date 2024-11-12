@@ -1,3 +1,3 @@
-from .config import XI_API_KEY
+from .config import XI_API_KEY, MAX_SIZE_SILENTCIPHER
 
-__all__ = ["XI_API_KEY"]
+__all__ = ["XI_API_KEY","MAX_SIZE_SILENTCIPHER"]
