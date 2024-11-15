@@ -72,7 +72,9 @@ class AudiosealWatermark(BaseWatermark):
         Output: result - probability, message - encoded message
         """
         audio, sr = input
+        audio_tensor = torch.from_numpy(audio).to(torch.float32)
+        audio_tensor = audio_tensor.unsqueeze(0).unsqueeze(0)
         if self.detector is None:
             self.detector = AudioSeal.load_detector(("audioseal_detector_16bits"))
-        result, message = self.detector.detect_watermark(audio,sample_rate=sr)
+        result, message = self.detector.detect_watermark(audio_tensor,sample_rate=sr)
         return result, message

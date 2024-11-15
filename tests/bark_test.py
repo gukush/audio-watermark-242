@@ -14,7 +14,7 @@ import torchaudio
 import torch
 
 from bark_with_voice_clone.hubert.hubert_manager import HuBERTManager
-
+os.chdir('/project/')
 hubert_manager = HuBERTManager()
 hubert_manager.make_sure_hubert_installed()
 hubert_manager.make_sure_tokenizer_installed()
@@ -63,4 +63,4 @@ semantic_tokens_2 = semantic_tokens_2.cpu().numpy()
 cloned_audio = semantic_to_waveform(semantic_tokens_2,history_prompt=voice_name)
 audio_output_path = os.path.join(root_path,'audio','old','voice-polish-1_bark.wav')
 import soundfile
-soundfile.write(audio_output_path,cloned_audio,sample_rate=24000)
+soundfile.write(audio_output_path,cloned_audio,24000)

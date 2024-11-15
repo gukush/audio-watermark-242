@@ -11,15 +11,15 @@ if not os.path.exists('./audio/old'):
 print("Getting test audio samples")
 root_path = os.path.dirname(__file__)
 download_audio(
-    'https://drive.google.com/file/d/1QTGpn2V55tlh_WI9JFU-IMd7DAnqfF_y/view?usp=drive_link',
+    'https://drive.google.com/file/d/1FoeK7httIPp5qJ9PlZifDzNimTYzv_Rl/view?usp=drive_link',#'https://drive.google.com/file/d/1QTGpn2V55tlh_WI9JFU-IMd7DAnqfF_y/view?usp=drive_link',
     os.path.join(root_path,'audio','old','voice-polish-1.wav')
 )
 download_audio(
-    'https://drive.google.com/file/d/1nu5V-IYkLEI6ZjQaiBLTLfarpgj7h-nh/view?usp=drive_link',
+    'https://drive.google.com/file/d/1nGCLgDkUiPbdaocO78xh-toYzWkEHcDQ/view?usp=drive_link',#'https://drive.google.com/file/d/1nu5V-IYkLEI6ZjQaiBLTLfarpgj7h-nh/view?usp=drive_link',
     os.path.join(root_path,'audio','old','voice-hispanic-1.wav')
 )
 download_audio(
-    'https://drive.google.com/file/d/12aVcw-Ca4i5qq1nWb6LmcXWajjjzGzTk/view?usp=drive_link',
+    'https://drive.google.com/file/d/1p1DHko7lbus8DKsVzCj830jHQCWOgtMI/view?usp=drive_link',#'https://drive.google.com/file/d/12aVcw-Ca4i5qq1nWb6LmcXWajjjzGzTk/view?usp=drive_link',
     os.path.join(root_path,'audio','old','voice-polish-8.wav')
 )
 
