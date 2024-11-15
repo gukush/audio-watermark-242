@@ -6,9 +6,9 @@ This repo requires some submodules, clone it recursively:
 git clone --recursive https://github.com/gukush/audio-watermark-242.git
 ```
 To run the sample experiment first create image using docker.
-From repository's root directory run:
+From repository's root directory run (for now Dockerfile-test is the better dockerfile):
 ```
-docker build -t audio-watermark .
+docker build -t audio-watermark -f Dockerfile-test .
 ```
 Then create the container (also from repository's root directory), on Windows please replace the source=./ part with source={C:\\absolute\\path\\to\\repo\\audio-watermark-242\\}.
 ```
