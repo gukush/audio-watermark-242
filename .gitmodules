@@ -25,3 +25,6 @@
 [submodule "IMS-Toucan"]
 	path = IMS-Toucan
 	url = https://github.com/DigitalPhonetics/IMS-Toucan
+[submodule "WavTokenizer"]
+	path = WavTokenizer
+	url = https://github.com/jishengpeng/WavTokenizer.git
