@@ -7,7 +7,7 @@ from wavmark.utils import file_reader
 # Not tested yet if it works properly
 class WavmarkWatermark(BaseWatermark):
     name = "wavmark"
-    payload = np.array([1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0])
+    payload = np.array([0,1,1,0,0,0,0,1,0,0,1,1,0,0,1,0])
     def __init__(self):
         self.model = None
     # Add Stereo support (watermarking channels separately (maybe in batches?))
