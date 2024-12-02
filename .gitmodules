@@ -28,3 +28,6 @@
 [submodule "WavTokenizer"]
 	path = WavTokenizer
 	url = https://github.com/jishengpeng/WavTokenizer.git
+[submodule "CollaborativeWatermarking"]
+	path = CollaborativeWatermarking
+	url = https://github.com/ljuvela/CollaborativeWatermarking.git
