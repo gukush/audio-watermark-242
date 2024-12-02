@@ -12,7 +12,7 @@ import time
 #first empty line is used to indicate lack of watermark (no modifcation)
 SUPPORTED_WATERMARKS = ['','audioseal','wavmark','silentcipher']
 SUPPORTED_VOICE_CLONING = ['','openvoice','coquitts']
-SUPPORTED_AUDIO_EXTENSIONS = ['.wav','.opus']
+SUPPORTED_AUDIO_EXTENSIONS = ['.wav','.opus','.flac']
 ROOT_DIR = os.path.dirname(__file__)
 
 def main_old():
