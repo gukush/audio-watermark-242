@@ -7,7 +7,7 @@ import numpy as np
 
 class SilentcipherWatermark(BaseWatermark):
     name = "silentcipher"
-    payload = [123, 234, 111, 222, 11]
+    payload = [0b0110000100110010] # [123, 234, 111, 222, 11]
     def __init__(self):
         self.model = None
     def add_watermark(self, input,skip_preprocessing=False):
