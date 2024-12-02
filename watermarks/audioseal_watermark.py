@@ -8,7 +8,7 @@ class AudiosealWatermark(BaseWatermark):
     name = "audioseal"
     #tensor([[0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0],
     #    [0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1]])
-    payload = torch.Tensor([[1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0]])
+    payload = torch.Tensor([[0,1,1,0,0,0,0,1,0,0,1,1,0,0,1,0])
     def __init__(self):
         self.detector = None
         self.model = None
