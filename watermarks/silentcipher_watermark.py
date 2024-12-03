@@ -13,7 +13,7 @@ class SilentcipherWatermark(BaseWatermark):
     def add_watermark(self, input,skip_preprocessing=False):
         if self.model is None:
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
-            self.model = silentcipher.get_model(model_type='44.1k',device=device)
+            self.model = silentcipher.get_model(model_type='16k',device=device) #model_type='44.1k'
         if not skip_preprocessing:
             audio, sr = self.preprocess(input)
         else:
