@@ -121,7 +121,7 @@ def parse_samples(samples_list):
         return []
     for sample in samples_list:
         if os.path.isdir(sample):
-            for item in os.listdir(sample):
+            for item in sorted(os.listdir(sample)):
                 file_path = os.path.join(sample,item)
                 if os.path.isfile(file_path):
                     extension = os.path.splitext(file_path)[1]
