@@ -9,7 +9,7 @@ SUPPORTED_AUDIO_EXTENSIONS = ['.wav','.opus','.flac']
 import sys
 import numpy as np
 # This test requires a lot of resources
-root_path = os.path.join(os.path.dirname(__file__),'..')#,'bark_with_voice_clone')
+root_path = os.path.join(os.path.dirname(__file__))#,'bark_with_voice_clone')
 sys.path.append(root_path)
 submodule_path = os.path.join(root_path,'bark-with-voice-clone')
 from bark_with_voice_clone.bark.generation import load_codec_model, generate_text_semantic
