@@ -108,6 +108,8 @@ def main(args):
     clones = parse_technique_list(args.clones,SUPPORTED_VOICE_CLONING)
     if args.detect is not None:
         samples_to_detect = parse_samples(args.detect)
+    else:
+        samples_to_detect = None
     if watermarks is not None:
         watermark_samples(samples,watermarks,args.override)
     else:
