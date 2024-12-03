@@ -1,6 +1,7 @@
 import os
 ROOT_DIR = os.path.dirname(__file__)
 import logging
+import argparse
 import time
 import torch, torchaudio
 import soundfile as sf
@@ -87,7 +88,7 @@ def main(args):
         samples_to_detect = parse_samples(args.detect)
     else:
         samples_to_detect = None
-    voice_clone_samples(samples,clones,voices,args.override)
+    voice_clone_samples(samples,voices,args.override)
     
 def parse_technique_list(str,supported_list):
     if str is None:
