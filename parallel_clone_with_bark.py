@@ -20,17 +20,14 @@ from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, c
 import torch.multiprocessing as mp
 from bark_with_voice_clone.bark.api import generate_audio, semantic_to_waveform
 from transformers import BertTokenizer
-from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic
-num_devices = torch.cuda.device_count()
+from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic, _load_model
 
-assert num_devices > 0 and "No CUDA devices found!"
-
+models = {}
+model_devices = {}
 #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')#'cpu'
 
 
-
 def run_process(rank,voice_sublists,samples,override=None,skip_list=None):
-    preload_models()
     voices_list = voice_sublists[rank]
     voice_clone_samples(rank,samples,voices_list,override,skip_list)
 
@@ -58,8 +55,13 @@ def clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer,device):
     cloned_audio = semantic_to_waveform(semantic_tokens_2,history_prompt=voice_name)
     return cloned_audio, model.sample_rate
 
+
 def voice_clone_samples(device_id,samples,voices_list, override=False, skip_list=None):
     device = torch.device(f"cuda:{device_id}")
+    # we need model preloading here:
+    global models
+    global model_devices
+
     logging.info(f"Process on device {device} cloning voices from {voices_list[0]} to {voices_list[-1]}")
     model = load_codec_model(use_gpu=False).to(device)
     from bark_with_voice_clone.hubert.hubert_manager import HuBERTManager
@@ -95,6 +97,18 @@ def voice_clone_samples(device_id,samples,voices_list, override=False, skip_list
 
 
 def main(args):
+    if args.device is not None:
+        num_devices = torch.cuda.device_count()
+        device_id = int(args.device)
+        device = torch.device(f"cuda:{device_id}")
+        assert 0 <= device_id <= num_devices, "Incorrect device id"
+        models["text"] = _load_model("/project/models/text_2.pt",device)
+        models["text"]["model"].to(device)
+        models["fine"] = _load_model("/project/models/fine_2.pt",device)
+        models["coarse"] = _load_model("/project/models/coarse_2.pt",device)
+        model_devices["text"] = device
+        model_devices["fine"] = device
+        model_devices["coarse"] = device
     os.makedirs(os.path.join(ROOT_DIR,'audio','watermarked'),exist_ok=True)
     os.makedirs(os.path.join(ROOT_DIR, 'audio','clone'),exist_ok=True)
     if args.samples is not None:
@@ -110,13 +124,7 @@ def main(args):
         skip_list = parse_already_done(args.skip_list[0])
     else:
         skip_list = None
-    mp.spawn(
-        fn = run_process,
-        args = (sublists,samples,args.override,skip_list),
-        nprocs=num_devices,
-        join=True
-    )
-    #voice_clone_samples(samples,voices,args.override,skip_list)
+    voice_clone_samples(device_id,samples,sublists[device_id],args.override,skip_list)
 
 def parse_already_done(filename):
     with open(filename,"r") as f:
@@ -180,6 +188,7 @@ if __name__ == "__main__":
     parser.add_argument("--detect",nargs='+',help="Inout audio file or directory with audio files that will be object(s) of watermark detection.")
     parser.add_argument("--identity",action='store_true',help="Setting this option to true makes the detect watermark function look fr watermark name in the file and only compare it to that single technique, discarding other possibilites.")
     parser.add_argument("--skip_list",nargs='+',help="Input .txt file with list of permutations that should be skipped",required=False)
+    parser.add_argument("--device",help="Number of CUDA device to run the models on.",required=False)
     args = parser.parse_args()
     #parser.add_argument("--distortions",help="String comma-delimioted of numbers or names or simply \"all\" that indicate watermarking techniques to use in pipeline")
     logging.basicConfig(
