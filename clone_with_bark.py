@@ -18,7 +18,7 @@ from bark_with_voice_clone.bark.api import generate_audio, semantic_to_waveform
 from transformers import BertTokenizer
 from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic
 
-device = 'cpu'
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')#'cpu'
 model = load_codec_model(use_gpu=False)
 from bark_with_voice_clone.hubert.hubert_manager import HuBERTManager
 os.chdir('/project/')
@@ -57,13 +57,16 @@ def clone_voice_to_sample(sample,voice):
     cloned_audio = semantic_to_waveform(semantic_tokens_2,history_prompt=voice_name)
     return cloned_audio, model.sample_rate
 
-def voice_clone_samples(samples,voices_list, override=False):
+def voice_clone_samples(samples,voices_list, override=False, skip_list=None):
     for voice in voices_list:
         voice_name, _ = os.path.splitext(os.path.basename(voice))
         for sample in samples:
             filename = os.path.basename(sample)
             sample_name, ext = os.path.splitext(filename)
             cloned_path = os.path.join(ROOT_DIR,'audio','clone',f'{sample_name}_bark_{voice_name}{ext}')
+            if f'{sample_name}_bark_{voice_name}{ext}' in skip_list:
+                logging.info(f"File {cloned_path} is in skip list, skipping.")
+                continue
             if os.path.isfile(cloned_path) and not override:
                 logging.info(f"File {cloned_path} already exists, skipping. Use --override option to change the behavior.")
                 continue
@@ -88,7 +91,16 @@ def main(args):
         samples_to_detect = parse_samples(args.detect)
     else:
         samples_to_detect = None
-    voice_clone_samples(samples,voices,args.override)
+    if args.skip_list is not None:
+        skip_list = parse_already_done(args.skip_list)
+    else:
+        skip_list = None
+    voice_clone_samples(samples,voices,args.override,skip_list)
+
+def parse_already_done(filename):
+    with open(filename,"r") as f:
+        contents = f.read().striplines()
+    return contents
     
 def parse_technique_list(str,supported_list):
     if str is None:
@@ -146,6 +158,7 @@ if __name__ == "__main__":
     parser.add_argument("--override",action='store_true')
     parser.add_argument("--detect",nargs='+',help="Inout audio file or directory with audio files that will be object(s) of watermark detection.")
     parser.add_argument("--identity",action='store_true',help="Setting this option to true makes the detect watermark function look fr watermark name in the file and only compare it to that single technique, discarding other possibilites.")
+    parser.add_argument("--skip_list",nargs='+',help="Input .txt file with list of permutations that should be skipped",required=False)
     args = parser.parse_args()
     #parser.add_argument("--distortions",help="String comma-delimioted of numbers or names or simply \"all\" that indicate watermarking techniques to use in pipeline")
     logging.basicConfig(
