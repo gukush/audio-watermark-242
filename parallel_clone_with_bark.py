@@ -102,10 +102,10 @@ def main(args):
         device_id = int(args.device)
         device = torch.device(f"cuda:{device_id}")
         assert 0 <= device_id <= num_devices, "Incorrect device id"
-        models["text"] = _load_model("/project/models/text_2.pt",device)
+        models["text"] = _load_model("/project/models/text_2.pt",device,model_type="text")
         models["text"]["model"].to(device)
-        models["fine"] = _load_model("/project/models/fine_2.pt",device)
-        models["coarse"] = _load_model("/project/models/coarse_2.pt",device)
+        models["fine"] = _load_model("/project/models/fine_2.pt",device,model_type="fine")
+        models["coarse"] = _load_model("/project/models/coarse_2.pt",device,model_type="coarse")
         model_devices["text"] = device
         model_devices["fine"] = device
         model_devices["coarse"] = device
