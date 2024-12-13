@@ -17,20 +17,21 @@ from encodec.utils import convert_audio
 from bark_with_voice_clone.bark.api import generate_audio, semantic_to_waveform
 from transformers import BertTokenizer
 from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic
+import torch.multiprocessing as mp
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')#'cpu'
-model = load_codec_model(use_gpu=False)
-from bark_with_voice_clone.hubert.hubert_manager import HuBERTManager
-os.chdir('/project/')
-hubert_manager = HuBERTManager()
-hubert_manager.make_sure_hubert_installed()
-hubert_manager.make_sure_tokenizer_installed()
-from bark_with_voice_clone.hubert.pre_kmeans_hubert import CustomHubert
-from bark_with_voice_clone.hubert.customtokenizer import CustomTokenizer
-hubert_model = CustomHubert(checkpoint_path='/project/data/models/hubert/hubert.pt',device=device).to(device)
-tokenizer = CustomTokenizer.load_from_checkpoint('/project/data/models/hubert/tokenizer.pth',map_location=device).to(device)
+num_devices = torch.cuda.device_count()
 
-def clone_voice_to_sample(sample,voice):
+assert num_devices > 0 and "No CUDA devices found!"
+
+#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')#'cpu'
+
+
+
+def run_process(rank,voice_sublists,samples,override=None,skip_list=None):
+    voices_list = voice_sublists[rank]
+    voice_clone_samples(rank,samples,voices_list,override,skip_list)
+
+def clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer):
     voice_name, _ = os.path.splitext(os.path.basename(voice))
     prompt_voice_path = os.path.join(submodule_path,'bark','assets','prompts',voice_name+'.npz')
     if os.path.isfile(prompt_voice_path):
@@ -57,7 +58,19 @@ def clone_voice_to_sample(sample,voice):
     cloned_audio = semantic_to_waveform(semantic_tokens_2,history_prompt=voice_name)
     return cloned_audio, model.sample_rate
 
-def voice_clone_samples(samples,voices_list, override=False, skip_list=None):
+def voice_clone_samples(device_id,samples,voices_list, override=False, skip_list=None):
+    device = torch.device(f"cuda:{device_id}")
+    logging.info(f"Process on device {device} cloning voices from {voices_list[0]} to {voices_list[-1]}")
+    model = load_codec_model(use_gpu=False).to(device)
+    from bark_with_voice_clone.hubert.hubert_manager import HuBERTManager
+    os.chdir('/project/')
+    hubert_manager = HuBERTManager()
+    hubert_manager.make_sure_hubert_installed()
+    hubert_manager.make_sure_tokenizer_installed()
+    from bark_with_voice_clone.hubert.pre_kmeans_hubert import CustomHubert
+    from bark_with_voice_clone.hubert.customtokenizer import CustomTokenizer
+    hubert_model = CustomHubert(checkpoint_path='/project/data/models/hubert/hubert.pt',device=device).to(device)
+    tokenizer = CustomTokenizer.load_from_checkpoint('/project/data/models/hubert/tokenizer.pth',map_location=device).to(device)
     for voice in voices_list:
         voice_name, _ = os.path.splitext(os.path.basename(voice))
         for sample in samples:
@@ -73,11 +86,12 @@ def voice_clone_samples(samples,voices_list, override=False, skip_list=None):
             logging.info(f"Processing voice cloning with Bark for sample {filename} with voice {voice_name}")
             start = time.time()
             with torch.no_grad():
-                cloned_audio, sr = clone_voice_to_sample(sample,voice)
+                cloned_audio, sr = clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer)
             end = time.time()
             duration = end - start
             logging.info(f"Ended voice cloning with Bark for sample {filename} with voice {voice_name}, time: {duration}")
             sf.write(cloned_path,cloned_audio,sr)
+    logging.info(f"Device {device} ended cloning.")
 
 
 def main(args):
@@ -87,6 +101,7 @@ def main(args):
         samples = parse_samples(args.samples)
     if args.voices is not None:
         voices = parse_samples(args.voices)
+        sublists = np.array_split(voices,num_devices)
     if args.detect is not None:
         samples_to_detect = parse_samples(args.detect)
     else:
@@ -95,7 +110,10 @@ def main(args):
         skip_list = parse_already_done(args.skip_list[0])
     else:
         skip_list = None
-    voice_clone_samples(samples,voices,args.override,skip_list)
+    mp.spawn(
+        fn = lambda rank: run_process(rank,sublists,samples,args.override,skip_list)
+    )
+    #voice_clone_samples(samples,voices,args.override,skip_list)
 
 def parse_already_done(filename):
     with open(filename,"r") as f:
