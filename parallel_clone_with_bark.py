@@ -29,6 +29,7 @@ from bark_with_voice_clone.hubert.customtokenizer import CustomTokenizer
 global models
 models = {}
 model_devices = {}
+
 #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')#'cpu'
 
 
@@ -117,6 +118,9 @@ def main(args):
         model_devices["text"] = device
         model_devices["fine"] = device
         model_devices["coarse"] = device
+        # very important!
+        bark_with_voice_clone.bark.generation.models = models
+        bark_with_voice_clone.bark.generation.model_devices = model_devices
     os.makedirs(os.path.join(ROOT_DIR,'audio','watermarked'),exist_ok=True)
     os.makedirs(os.path.join(ROOT_DIR, 'audio','clone'),exist_ok=True)
     if args.samples is not None:
