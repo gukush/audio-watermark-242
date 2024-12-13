@@ -110,7 +110,10 @@ def main(args):
     else:
         skip_list = None
     mp.spawn(
-        fn = lambda rank: run_process(rank,sublists,samples,args.override,skip_list)
+        fn = lambda rank: run_process(rank,sublists,samples,args.override,skip_list),
+        args = (sublists,samples,args.override,skip_list),
+        nprocs=num_devices,
+        join=True
     )
     #voice_clone_samples(samples,voices,args.override,skip_list)
 
