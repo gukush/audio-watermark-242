@@ -18,7 +18,9 @@ from bark_with_voice_clone.bark.api import generate_audio, semantic_to_waveform
 from transformers import BertTokenizer
 from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic
 import torch.multiprocessing as mp
-
+from bark_with_voice_clone.bark.api import generate_audio, semantic_to_waveform
+from transformers import BertTokenizer
+from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic
 num_devices = torch.cuda.device_count()
 
 assert num_devices > 0 and "No CUDA devices found!"
@@ -31,7 +33,7 @@ def run_process(rank,voice_sublists,samples,override=None,skip_list=None):
     voices_list = voice_sublists[rank]
     voice_clone_samples(rank,samples,voices_list,override,skip_list)
 
-def clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer):
+def clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer,device):
     voice_name, _ = os.path.splitext(os.path.basename(voice))
     prompt_voice_path = os.path.join(submodule_path,'bark','assets','prompts',voice_name+'.npz')
     if os.path.isfile(prompt_voice_path):
@@ -47,9 +49,6 @@ def clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer):
         codes = codes.cpu().numpy()
         semantic_tokens = semantic_tokens.cpu().numpy()
         np.savez(prompt_voice_path,fine_prompt=codes,coarse_prompt=codes[:2,:],semantic_prompt=semantic_tokens)
-    from bark_with_voice_clone.bark.api import generate_audio, semantic_to_waveform
-    from transformers import BertTokenizer
-    from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic
     sample_audio, sample_sr = torchaudio.load(sample)
     sample_wav = convert_audio(sample_audio,sample_sr,model.sample_rate, model.channels).to(device)
     semantic_vectors_2 = hubert_model.forward(sample_wav,input_sample_hz=model.sample_rate)
@@ -83,13 +82,13 @@ def voice_clone_samples(device_id,samples,voices_list, override=False, skip_list
             if os.path.isfile(cloned_path) and not override:
                 logging.info(f"File {cloned_path} already exists, skipping. Use --override option to change the behavior.")
                 continue
-            logging.info(f"Processing voice cloning with Bark for sample {filename} with voice {voice_name}")
+            logging.info(f"Processing voice cloning with Bark for sample {filename} with voice {voice_name} on device {device}")
             start = time.time()
             with torch.no_grad():
-                cloned_audio, sr = clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer)
+                cloned_audio, sr = clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer,device)
             end = time.time()
             duration = end - start
-            logging.info(f"Ended voice cloning with Bark for sample {filename} with voice {voice_name}, time: {duration}")
+            logging.info(f"Ended voice cloning with Bark for sample {filename} with voice {voice_name}, time: {duration}, device: {device}")
             sf.write(cloned_path,cloned_audio,sr)
     logging.info(f"Device {device} ended cloning.")
 
