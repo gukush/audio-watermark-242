@@ -99,7 +99,7 @@ def main(args):
 
 def parse_already_done(filename):
     with open(filename,"r") as f:
-        contents = f.read().striplines()
+        contents = f.read().splitlines()
     return contents
     
 def parse_technique_list(str,supported_list):
