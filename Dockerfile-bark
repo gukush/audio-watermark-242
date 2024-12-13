@@ -6,3 +6,4 @@ WORKDIR /project/bark-with-voice-clone
 RUN pip install fairseq
 RUN pip install audiolm-pytorch
 RUN pip install .
+RUN pip install soundfile
