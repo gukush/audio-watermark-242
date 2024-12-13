@@ -17,11 +17,16 @@ from encodec.utils import convert_audio
 from bark_with_voice_clone.bark.api import generate_audio, semantic_to_waveform
 from transformers import BertTokenizer
 from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic
-import torch.multiprocessing as mp
+#import torch.multiprocessing as mp
+import bark_with_voice_clone.bark.generation
 from bark_with_voice_clone.bark.api import generate_audio, semantic_to_waveform
 from transformers import BertTokenizer
 from bark_with_voice_clone.bark.generation import SAMPLE_RATE, preload_models, codec_decode, generate_coarse, generate_fine, generate_text_semantic, _load_model
+from bark_with_voice_clone.hubert.hubert_manager import HuBERTManager
+from bark_with_voice_clone.hubert.pre_kmeans_hubert import CustomHubert
+from bark_with_voice_clone.hubert.customtokenizer import CustomTokenizer
 
+global models
 models = {}
 model_devices = {}
 #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')#'cpu'
@@ -32,6 +37,8 @@ def run_process(rank,voice_sublists,samples,override=None,skip_list=None):
     voice_clone_samples(rank,samples,voices_list,override,skip_list)
 
 def clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer,device):
+    global models
+    global model_devices
     voice_name, _ = os.path.splitext(os.path.basename(voice))
     prompt_voice_path = os.path.join(submodule_path,'bark','assets','prompts',voice_name+'.npz')
     if os.path.isfile(prompt_voice_path):
@@ -64,13 +71,12 @@ def voice_clone_samples(device_id,samples,voices_list, override=False, skip_list
 
     logging.info(f"Process on device {device} cloning voices from {voices_list[0]} to {voices_list[-1]}")
     model = load_codec_model(use_gpu=False).to(device)
-    from bark_with_voice_clone.hubert.hubert_manager import HuBERTManager
+    
     os.chdir('/project/')
     hubert_manager = HuBERTManager()
     hubert_manager.make_sure_hubert_installed()
     hubert_manager.make_sure_tokenizer_installed()
-    from bark_with_voice_clone.hubert.pre_kmeans_hubert import CustomHubert
-    from bark_with_voice_clone.hubert.customtokenizer import CustomTokenizer
+    
     hubert_model = CustomHubert(checkpoint_path='/project/data/models/hubert/hubert.pt',device=device).to(device)
     tokenizer = CustomTokenizer.load_from_checkpoint('/project/data/models/hubert/tokenizer.pth',map_location=device).to(device)
     for voice in voices_list:
@@ -102,6 +108,8 @@ def main(args):
         device_id = int(args.device)
         device = torch.device(f"cuda:{device_id}")
         assert 0 <= device_id <= num_devices, "Incorrect device id"
+        global models
+        global model_devices
         models["text"] = _load_model("/project/models/text_2.pt",device,model_type="text")
         models["text"]["model"].to(device)
         models["fine"] = _load_model("/project/models/fine_2.pt",device,model_type="fine")
