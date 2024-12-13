@@ -30,6 +30,7 @@ assert num_devices > 0 and "No CUDA devices found!"
 
 
 def run_process(rank,voice_sublists,samples,override=None,skip_list=None):
+    preload_models()
     voices_list = voice_sublists[rank]
     voice_clone_samples(rank,samples,voices_list,override,skip_list)
 
