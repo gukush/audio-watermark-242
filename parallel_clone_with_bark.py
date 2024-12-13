@@ -110,7 +110,7 @@ def main(args):
     else:
         skip_list = None
     mp.spawn(
-        fn = lambda rank: run_process(rank,sublists,samples,args.override,skip_list),
+        fn = run_process,
         args = (sublists,samples,args.override,skip_list),
         nprocs=num_devices,
         join=True
