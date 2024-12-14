@@ -140,23 +140,6 @@ def voice_clone_samples(device_id,sample_voice_tuple_list, override=False, skip_
     logging.info(f"Device {device} ended cloning.")
 
 def main(args):
-    if args.device is not None:
-        num_devices = torch.cuda.device_count()
-        device_id = int(args.device)
-        device = torch.device(f"cuda:{device_id}")
-        assert 0 <= device_id <= num_devices, "Incorrect device id"
-        global models
-        global model_devices
-        models["text"] = _load_model("/project/models/text_2.pt",device,model_type="text")
-        models["text"]["model"].to(device)
-        models["fine"] = _load_model("/project/models/fine_2.pt",device,model_type="fine")
-        models["coarse"] = _load_model("/project/models/coarse_2.pt",device,model_type="coarse")
-        model_devices["text"] = device
-        model_devices["fine"] = device
-        model_devices["coarse"] = device
-        # very important!
-        bark_with_voice_clone.bark.generation.models = models
-        bark_with_voice_clone.bark.generation.model_devices = model_devices
     os.makedirs(os.path.join(ROOT_DIR,'audio','watermarked'),exist_ok=True)
     os.makedirs(os.path.join(ROOT_DIR, 'audio','clone'),exist_ok=True)
     if args.samples is not None:
@@ -176,6 +159,23 @@ def main(args):
     kept_combinations = filter_combinations(all_combinations,skip_list,'/project/audio/clone/')
     print(f"Skipped {len(all_combinations) - len(kept_combinations)} combinations")
     sublists = np.array_split(kept_combinations,num_devices)
+    if args.device is not None:
+        num_devices = torch.cuda.device_count()
+        device_id = int(args.device)
+        device = torch.device(f"cuda:{device_id}")
+        assert 0 <= device_id <= num_devices, "Incorrect device id"
+        global models
+        global model_devices
+        models["text"] = _load_model("/project/models/text_2.pt",device,model_type="text")
+        models["text"]["model"].to(device)
+        models["fine"] = _load_model("/project/models/fine_2.pt",device,model_type="fine")
+        models["coarse"] = _load_model("/project/models/coarse_2.pt",device,model_type="coarse")
+        model_devices["text"] = device
+        model_devices["fine"] = device
+        model_devices["coarse"] = device
+        # very important!
+        bark_with_voice_clone.bark.generation.models = models
+        bark_with_voice_clone.bark.generation.model_devices = model_devices
     voice_clone_samples(device_id,sublists[device_id],args.override,skip_list)
 
 def parse_already_done(filename):
