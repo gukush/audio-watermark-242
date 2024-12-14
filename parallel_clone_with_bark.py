@@ -108,7 +108,7 @@ def voice_clone_samples(device_id,sample_voice_tuple_list, override=False, skip_
     global models
     global model_devices
 
-    logging.info(f"Process on device {device} cloning voices from {samples_voice_tuple_list[0]} to {samples_voice_tuple_list[-1]}")
+    logging.info(f"Process on device {device} cloning voices from {sample_voice_tuple_list[0]} to {sample_voice_tuple_list[-1]}")
     model = load_codec_model(use_gpu=False).to(device)
     
     os.chdir('/project/')
