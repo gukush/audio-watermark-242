@@ -64,7 +64,7 @@ def clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer,device):
     return cloned_audio, model.sample_rate
 
 
-def voice_clone_samples(device_id,samples,voices_list, override=False, skip_list=None):
+def voice_clone_samples_old(device_id,samples,voices_list, override=False, skip_list=None):
     device = torch.device(f"cuda:{device_id}")
     # we need model preloading here:
     global models
@@ -102,6 +102,42 @@ def voice_clone_samples(device_id,samples,voices_list, override=False, skip_list
             sf.write(cloned_path,cloned_audio,sr)
     logging.info(f"Device {device} ended cloning.")
 
+def voice_clone_samples(device_id,sample_voice_tuple_list, override=False, skip_list=None):
+    device = torch.device(f"cuda:{device_id}")
+    # we need model preloading here:
+    global models
+    global model_devices
+
+    logging.info(f"Process on device {device} cloning voices from {voices_list[0]} to {voices_list[-1]}")
+    model = load_codec_model(use_gpu=False).to(device)
+    
+    os.chdir('/project/')
+    hubert_manager = HuBERTManager()
+    hubert_manager.make_sure_hubert_installed()
+    hubert_manager.make_sure_tokenizer_installed()
+    
+    hubert_model = CustomHubert(checkpoint_path='/project/data/models/hubert/hubert.pt',device=device).to(device)
+    tokenizer = CustomTokenizer.load_from_checkpoint('/project/data/models/hubert/tokenizer.pth',map_location=device).to(device)
+    for sample, voice in sample_voice_tuple_list:
+        voice_name, _ = os.path.splitext(os.path.basename(voice))
+        filename = os.path.basename(sample)
+        sample_name, ext = os.path.splitext(filename)
+        cloned_path = os.path.join(ROOT_DIR,'audio','clone',f'{sample_name}_bark_{voice_name}{ext}')
+        if f'{sample_name}_bark_{voice_name}{ext}' in skip_list:
+            logging.info(f"File {cloned_path} is in skip list, skipping.")
+            continue
+        if os.path.isfile(cloned_path) and not override:
+            logging.info(f"File {cloned_path} already exists, skipping. Use --override option to change the behavior.")
+            continue
+        logging.info(f"Processing voice cloning with Bark for sample {filename} with voice {voice_name} on device {device}")
+        start = time.time()
+        with torch.no_grad():
+            cloned_audio, sr = clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer,device)
+        end = time.time()
+        duration = end - start
+        logging.info(f"Ended voice cloning with Bark for sample {filename} with voice {voice_name}, time: {duration}, device: {device}")
+        sf.write(cloned_path,cloned_audio,sr)
+    logging.info(f"Device {device} ended cloning.")
 
 def main(args):
     if args.device is not None:
@@ -127,7 +163,7 @@ def main(args):
         samples = parse_samples(args.samples)
     if args.voices is not None:
         voices = parse_samples(args.voices)
-        sublists = np.array_split(voices,num_devices)
+        #sublists = np.array_split(voices,num_devices)
     if args.detect is not None:
         samples_to_detect = parse_samples(args.detect)
     else:
@@ -136,7 +172,12 @@ def main(args):
         skip_list = parse_already_done(args.skip_list[0])
     else:
         skip_list = None
-    voice_clone_samples(device_id,samples,sublists[device_id],args.override,skip_list)
+    all_combinations = [(sample,voice) for sample in samples for voice in voices]
+    kept_combinations = filter_combinations(all_combinations,skip_list,'/project/audio/clone/')
+    print(f"Skipped {len(all_combinations) - len(kept_combinations)} combinations")
+    sublists = np.array_split(kept_combinations,num_devices)
+    breakpoint()
+    voice_clone_samples(device_id,sublists[device_id],args.override,skip_list)
 
 def parse_already_done(filename):
     with open(filename,"r") as f:
@@ -167,6 +208,15 @@ def parse_technique_list(str,supported_list):
                 used_techniques.extend([name.lower()])
     used_techniques = list(dict.fromkeys(used_techniques))
     return used_techniques
+
+def filter_combinations(combinations,skip_list,clone_dir):
+    created_file_list = set(os.listdir(clone_dir))
+    combinations = set(combinations)
+    skip_set = set(skip_list)
+    z = combinations.difference(skip_set)
+    z = z.difference(created_file_list)
+    return list(z)
+    
 
 def parse_samples(samples_list):
     file_list = []
