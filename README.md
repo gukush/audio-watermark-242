@@ -14,6 +14,7 @@ Then create the container (also from repository's root directory), on Windows pl
 ```
 docker run -it --mount type=bind,source=./,target=/project/ --name audio-watermark audio-watermark
 ```
+When you have CUDA container toolkit installed then you can add GPUs in by adding *--runtime nvidia --gpus all* options.
 When you want to access the container from other terminal window, run (on Linux):
 ```
 docker exec -it audio-watermark /bin/bash
