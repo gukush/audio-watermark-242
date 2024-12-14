@@ -219,7 +219,7 @@ def filter_combinations(combinations,skip_list,clone_dir):
     skip_basenames = [(i+'.flac',j) for i, j in skip_basenames]
     combinations_basenames = [(os.path.basename(i),os.path.basename(j)) for i,j in combinations]
     z = []
-    for ((i,j),(k,l)) in zip(combinations,combination_basenames):
+    for ((i,j),(k,l)) in zip(combinations,combinations_basenames):
         if (k,l) not in created_file_basenames:
             if (k,l) not in skip_basenames:
                 z.append((i,j))
