@@ -159,7 +159,11 @@ def main(args):
     all_combinations = [(sample,voice) for sample in samples for voice in voices]
     kept_combinations = filter_combinations(all_combinations,skip_list,'/project/audio/clone/')
     print(f"Skipped {len(all_combinations) - len(kept_combinations)} combinations")
-    sublists = np.array_split(kept_combinations,num_devices)
+    if len(kept_combinations) < 12:
+        print("Less than 12 elements left, doing all on same device without splitting")
+        sublists = [kept_combinations] * num_devices
+    else:
+        sublists = np.array_split(kept_combinations,num_devices)
     if args.device is not None:
         device_id = int(args.device)
         device = torch.device(f"cuda:{device_id}")
