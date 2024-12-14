@@ -140,6 +140,7 @@ def voice_clone_samples(device_id,sample_voice_tuple_list, override=False, skip_
     logging.info(f"Device {device} ended cloning.")
 
 def main(args):
+    num_devices = torch.cuda.device_count()
     os.makedirs(os.path.join(ROOT_DIR,'audio','watermarked'),exist_ok=True)
     os.makedirs(os.path.join(ROOT_DIR, 'audio','clone'),exist_ok=True)
     if args.samples is not None:
@@ -160,7 +161,6 @@ def main(args):
     print(f"Skipped {len(all_combinations) - len(kept_combinations)} combinations")
     sublists = np.array_split(kept_combinations,num_devices)
     if args.device is not None:
-        num_devices = torch.cuda.device_count()
         device_id = int(args.device)
         device = torch.device(f"cuda:{device_id}")
         assert 0 <= device_id <= num_devices, "Incorrect device id"
