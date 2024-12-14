@@ -211,9 +211,11 @@ def parse_technique_list(str,supported_list):
 def filter_combinations(combinations,skip_list,clone_dir):
     created_file_list = os.listdir(clone_dir)
     created_file_basenames = [tuple(i.split('_bark_')) for i in created_file_list]
+    created_file_basenames = [i for i in skip_basenames if len(i) > 1]
     created_file_basenames = [(i+'.flac',j) for i, j in created_file_basenames]
     #combinations = set(combinations)
     skip_basenames = [tuple(i.split('_bark_')) for i in skip_list]
+    skip_basenames = [i for i in skip_basenames if len(i) > 1]
     skip_basenames = [(i+'.flac',j) for i, j in skip_basenames]
     combinations_basenames = [(os.path.basename(i),os.path.basename(j)) for i,j in combinations]
     z1 = [(i,j) for i,j,k,l in zip(combinations,combination_basenames) if (k,l) not in created_file_basenames ]
