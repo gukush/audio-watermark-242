@@ -176,7 +176,6 @@ def main(args):
     kept_combinations = filter_combinations(all_combinations,skip_list,'/project/audio/clone/')
     print(f"Skipped {len(all_combinations) - len(kept_combinations)} combinations")
     sublists = np.array_split(kept_combinations,num_devices)
-    breakpoint()
     voice_clone_samples(device_id,sublists[device_id],args.override,skip_list)
 
 def parse_already_done(filename):
