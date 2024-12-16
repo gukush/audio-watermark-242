@@ -41,7 +41,7 @@ def voice_clone_samples_old(device_id,samples,voices_list, override=False, skip_
             if os.path.isfile(cloned_path) and not override:
                 logging.info(f"File {cloned_path} already exists, skipping. Use --override option to change the behavior.")
                 continue
-            logging.info(f"Processing voice cloning with Bark for sample {filename} with voice {voice_name} on device {device}")
+            logging.info(f"Processing voice cloning with FreeVC (coqui-tts) for sample {filename} with voice {voice_name} on device {device}")
             start = time.time()
             with torch.no_grad():
                 cloned_audio, sr = clone_voice_to_sample(sample,voice,model,hubert_model,tokenizer,device)
@@ -68,7 +68,7 @@ def voice_clone_samples(device_id,sample_voice_tuple_list, override=False, skip_
         if os.path.isfile(cloned_path) and not override:
             logging.info(f"File {cloned_path} already exists, skipping. Use --override option to change the behavior.")
             continue
-        logging.info(f"Processing voice cloning with Bark for sample {filename} with voice {voice_name} on device {device}")
+        logging.info(f"Processing voice cloning with FreeVC (coqui-tts) for sample {filename} with voice {voice_name} on device {device}")
         start = time.time()
         with torch.no_grad():
             tts.voice_conversion_to_file(source_wav=sample,target_wav=voice,file_path=cloned_path)
@@ -147,7 +147,7 @@ def filter_combinations(combinations,skip_list,clone_dir):
     created_file_basenames = [i for i in created_file_basenames if len(i) > 1]
     created_file_basenames = [(i+'.flac',j) for i, j in created_file_basenames]
     #combinations = set(combinations)
-    skip_basenames = [tuple(i.split('_bark_')) for i in skip_list]
+    skip_basenames = [tuple(i.split('_freevc_')) for i in skip_list]
     skip_basenames = [i for i in skip_basenames if len(i) > 1]
     skip_basenames = [(i+'.flac',j) for i, j in skip_basenames]
     combinations_basenames = [(os.path.basename(i),os.path.basename(j)) for i,j in combinations]
