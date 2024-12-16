@@ -1,3 +1,4 @@
+# THIS FILE IS NAMED BADLY! COUQI TTS DOES NOT SUPPORT GPU EXECUTION SO IT CANNOT BE PARALLELIZED LIKE BARK WAS
 import os
 ROOT_DIR = os.path.dirname(__file__)
 import logging
@@ -52,7 +53,9 @@ def voice_clone_samples_old(device_id,samples,voices_list, override=False, skip_
     logging.info(f"Device {device} ended cloning.")
 
 def voice_clone_samples(device_id,sample_voice_tuple_list, override=False, skip_list=None):
-    device = torch.device(f"cuda:{device_id}")
+    #coquit ai tts does not support GPU!
+    device = "cpu"
+    #device = torch.device(f"cuda:{device_id}")
     # we need model preloading here:
     global model
     logging.info(f"Process on device {device} cloning voices from {sample_voice_tuple_list[0]} to {sample_voice_tuple_list[-1]}")
@@ -98,18 +101,18 @@ def main(args):
     all_combinations = [(sample,voice) for sample in samples for voice in voices]
     kept_combinations = filter_combinations(all_combinations,skip_list,'/project/audio/clone/')
     print(f"Skipped {len(all_combinations) - len(kept_combinations)} combinations")
-    if len(kept_combinations) < 12:
-        print("Less than 12 elements left, doing all on same device without splitting")
-        sublists = [kept_combinations] * num_devices
-    else:
-        sublists = np.array_split(kept_combinations,num_devices)
-    if args.device is not None:
-        device_id = int(args.device)
-        device = torch.device(f"cuda:{device_id}")
-        assert 0 <= device_id <= num_devices, "Incorrect device id"
-        global model
-        model = TTS(model_name="voice_conversion_models/multilingual/vctk/freevc24", progress_bar=True).to(device)
-    voice_clone_samples(device_id,sublists[device_id],args.override,skip_list)
+    #if len(kept_combinations) < 12:
+    #    print("Less than 12 elements left, doing all on same device without splitting")
+    #    sublists = [kept_combinations] * num_devices
+    #else:
+    #    sublists = np.array_split(kept_combinations,num_devices)
+    #if args.device is not None:
+    #    device_id = int(args.device)
+    #    device = torch.device(f"cuda:{device_id}")
+     #   assert 0 <= device_id <= num_devices, "Incorrect device id"
+    global model
+    model = TTS(model_name="voice_conversion_models/multilingual/vctk/freevc24", progress_bar=True).to("cpu")
+    voice_clone_samples(device_id,kept_combinations,args.override,skip_list)
 
 def parse_already_done(filename):
     with open(filename,"r") as f:
