@@ -112,7 +112,7 @@ def main(args):
      #   assert 0 <= device_id <= num_devices, "Incorrect device id"
     global model
     model = TTS(model_name="voice_conversion_models/multilingual/vctk/freevc24", progress_bar=True).to("cpu")
-    voice_clone_samples(device_id,kept_combinations,args.override,skip_list)
+    voice_clone_samples(0,kept_combinations,args.override,skip_list)
 
 def parse_already_done(filename):
     with open(filename,"r") as f:
