@@ -143,7 +143,7 @@ def parse_technique_list(str,supported_list):
 
 def filter_combinations(combinations,skip_list,clone_dir):
     created_file_list = os.listdir(clone_dir)
-    created_file_basenames = [tuple(i.split('_bark_')) for i in created_file_list]
+    created_file_basenames = [tuple(i.split('_freevc_')) for i in created_file_list]
     created_file_basenames = [i for i in created_file_basenames if len(i) > 1]
     created_file_basenames = [(i+'.flac',j) for i, j in created_file_basenames]
     #combinations = set(combinations)
