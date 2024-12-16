@@ -71,7 +71,7 @@ def voice_clone_samples(device_id,sample_voice_tuple_list, override=False, skip_
         logging.info(f"Processing voice cloning with FreeVC (coqui-tts) for sample {filename} with voice {voice_name} on device {device}")
         start = time.time()
         with torch.no_grad():
-            tts.voice_conversion_to_file(source_wav=sample,target_wav=voice,file_path=cloned_path)
+            model.voice_conversion_to_file(source_wav=sample,target_wav=voice,file_path=cloned_path)
         end = time.time()
         duration = end - start
         logging.info(f"Ended voice cloning with FreeVC for sample {filename} with voice {voice_name}, time: {duration}, device: {device}")
