@@ -2,6 +2,7 @@ import os
 ROOT_DIR = os.path.dirname(__file__)
 import logging
 import argparse
+import TTS.api
 import time
 import torch, torchaudio
 import soundfile as sf
