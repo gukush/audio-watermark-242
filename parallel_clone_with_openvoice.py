@@ -126,9 +126,12 @@ def main(args):
         num_devices = int(args.gpus) if int(args.gpus) < num_devices else num_devices
     if args.device is not None:
         global tone_color_converter
-        device_id = int(args.device)
-        device = f"cuda:{device_id}"#torch.device(f"cuda:{device_id}")
-        assert 0 <= device_id <= num_devices, "Incorrect device id"
+        if args.device == 'cpu':
+            device = 'cpu'
+        else:
+            device_id = int(args.device)
+            device = f"cuda:{device_id}"#torch.device(f"cuda:{device_id}")
+            assert 0 <= device_id <= num_devices, "Incorrect device id"
         tone_color_converter = ToneColorConverter(os.path.join(project_root,ckpt_converter,'config.json'),device=device)
         tone_color_converter.load_ckpt(os.path.join(project_root,ckpt_converter,'checkpoint.pth'))
     voice_clone_samples(device_id,sublists[device_id],args.override,skip_list)
