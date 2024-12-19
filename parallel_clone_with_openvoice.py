@@ -127,7 +127,7 @@ def main(args):
     if args.device is not None:
         global tone_color_converter
         device_id = int(args.device)
-        device = torch.device(f"cuda:{device_id}")
+        device = f"cuda:{device_id}"#torch.device(f"cuda:{device_id}")
         assert 0 <= device_id <= num_devices, "Incorrect device id"
         tone_color_converter = ToneColorConverter(os.path.join(project_root,ckpt_converter,'config.json'),device=device)
         tone_color_converter.load_ckpt(os.path.join(project_root,ckpt_converter,'checkpoint.pth'))
