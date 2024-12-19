@@ -69,8 +69,10 @@ def voice_clone_samples_old(device_id,samples,voices_list, override=False, skip_
     logging.info(f"Device {device} ended cloning.")
 
 def voice_clone_samples(device_id,sample_voice_tuple_list, override=False, skip_list=None):
-    device = torch.device(f"cuda:{device_id}")
-    # we need model preloading here:
+    if device_id == 'cpu':
+        device = 'cpu'
+    else:
+        device = torch.device(f"cuda:{device_id}")# we need model preloading here:
     global tone_color_converter
 
     logging.info(f"Process on device {device} cloning voices from {sample_voice_tuple_list[0]} to {sample_voice_tuple_list[-1]}")
