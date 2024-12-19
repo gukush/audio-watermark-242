@@ -84,6 +84,7 @@ def voice_clone_samples(device_id,sample_voice_tuple_list, override=False, skip_
             continue
         logging.info(f"Processing voice cloning with OpenVoice for sample {filename} with voice {voice_name} on device {device}")
         start = time.time()
+        breakpoint()
         with torch.no_grad():
             source_se, audio_name1 = se_extractor.get_se(sample,tone_color_converter,vad=False)
             target_se, audio_name2 = se_extractor.get_se(voice,tone_color_converter,vad=False)
