@@ -141,7 +141,10 @@ def main(args):
             assert 0 <= device_id <= num_devices, "Incorrect device id"
         tone_color_converter = ToneColorConverter(os.path.join(project_root,ckpt_converter,'config.json'),device=device)
         tone_color_converter.load_ckpt(os.path.join(project_root,ckpt_converter,'checkpoint.pth'))
-    voice_clone_samples(device_id,sublists[device_id],args.override,skip_list)
+    if device == 'cpu':
+        voice_clone_samples(device_id,sublists[0],args.override,skip_list)
+    else:
+        voice_clone_samples(device_id,sublists[device_id],args.override,skip_list)
 
 def parse_already_done(filename):
     with open(filename,"r") as f:
