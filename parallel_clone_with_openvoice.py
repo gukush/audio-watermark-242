@@ -32,7 +32,11 @@ def clone_voice_to_sample(sample,voice,device):
 
 
 def voice_clone_samples_old(device_id,samples,voices_list, override=False, skip_list=None):
-    device = torch.device(f"cuda:{device_id}")
+    if device_id == 'cpu':
+        device = 'cpu'
+    else:
+        device = torch.device(f"cuda:{device_id}")
+    
     # we need model preloading here:
     global models
     global model_devices
@@ -128,6 +132,7 @@ def main(args):
         global tone_color_converter
         if args.device == 'cpu':
             device = 'cpu'
+            device_id = 'cpu'
         else:
             device_id = int(args.device)
             device = f"cuda:{device_id}"#torch.device(f"cuda:{device_id}")
