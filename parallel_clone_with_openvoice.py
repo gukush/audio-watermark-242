@@ -118,7 +118,7 @@ def main(args):
     kept_combinations = filter_combinations(all_combinations,skip_list,'/project/audio/clone/')
     print(f"Skipped {len(all_combinations) - len(kept_combinations)} combinations")
     if args.gpus is not None:
-        num_devices = int(args.gpus) if int(args.gpus) < num_devices else num_devices
+        num_devices = int(args.gpus)
     if len(kept_combinations) < 12:
         print("Less than 12 elements left, doing all on same device without splitting")
         sublists = [kept_combinations] * num_devices
