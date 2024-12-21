@@ -56,6 +56,7 @@ def main(args):
         #sublists = np.array_split(voices,num_devices)
     if args.gpus is not None:
         num_devices = int(args.gpus)
+    kept_combinations = samples
     if len(kept_combinations) < 12:
         print("Less than 12 elements left, doing all on same device without splitting")
         sublists = [kept_combinations] * num_devices
