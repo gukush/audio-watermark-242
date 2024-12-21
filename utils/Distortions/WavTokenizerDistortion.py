@@ -1,5 +1,6 @@
 import os
 import sys
+ROOT_DIR = os.path.dirname(__file__)
 import logging
 import argparse
 import time
