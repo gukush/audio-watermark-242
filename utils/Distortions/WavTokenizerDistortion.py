@@ -21,7 +21,7 @@ def distort_with_wavtokenizer(samples,device,override):
     for sample in samples:
         filename = os.path.basename(sample)
         sample_name, ext = os.path.splitext(filename)
-        distorted_path = os.path.join('project','audio','distorted',f'{sample_name}_wavtokenizer{ext}')
+        distorted_path = os.path.join('/project','audio','distorted',f'{sample_name}_wavtokenizer{ext}')
         if os.path.isfile(distorted_path) and not override:
             logging.info(f"File {distorted_path} already exists, skipping. Use --override option to change the behavior.")
             continue
