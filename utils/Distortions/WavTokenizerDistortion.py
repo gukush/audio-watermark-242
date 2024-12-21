@@ -74,9 +74,9 @@ def main(args):
         wavtokenizer = WavTokenizer.from_pretrained0802(config_path,model_path)
         wavtokenizer = wavtokenizer.to(device)
     if device == 'cpu':
-        distort_with_wavtokenizer(sublists[0],device,args.override)
+        distort_with_wavtokenizer(sublists[0],device,False)
     else:
-        distort_with_wavtokenizer(sublists[device_id],device,args.override)
+        distort_with_wavtokenizer(sublists[device_id],device,False)
 
 def parse_already_done(filename):
     with open(filename,"r") as f:
