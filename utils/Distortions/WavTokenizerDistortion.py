@@ -53,13 +53,7 @@ def main(args):
     os.makedirs(os.path.join(ROOT_DIR, 'audio','clone'),exist_ok=True)
     if args.samples is not None:
         samples = parse_samples(args.samples)
-    if args.voices is not None:
-        voices = parse_samples(args.voices)
         #sublists = np.array_split(voices,num_devices)
-    if args.detect is not None:
-        samples_to_detect = parse_samples(args.detect)
-    else:
-        samples_to_detect = None
     if args.skip_list is not None:
         skip_list = parse_already_done(args.skip_list[0])
     else:
