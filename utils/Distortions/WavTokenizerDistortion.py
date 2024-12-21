@@ -38,7 +38,7 @@ def distort_with_wavtokenizer(samples,device,override):
         torchaudio.save(distorted_path,audio_out.to('cpu'),24000)
         end = time.time()
         duration = end - start
-        logging.info(f"Ended distorting with WavTokenizer for sample {filename} with voice {voice_name}, time: {duration}, device: {device}")
+        logging.info(f"Ended distorting with WavTokenizer for sample {filename}, time: {duration}, device: {device}")
     logging.info(f"Device {device} ended cloning.")
 #torch.save(discrete_code,"/project/tmp/Elevenlabs_latent_wavtokenizer.pth")
 
