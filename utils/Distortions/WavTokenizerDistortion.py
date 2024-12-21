@@ -5,6 +5,7 @@ import logging
 import argparse
 import time
 sys.path.append('/project/WavTokenizer')
+SUPPORTED_AUDIO_EXTENSIONS = ['.wav','.opus','.flac']
 from encoder.utils import convert_audio
 import torchaudio
 import torch
