@@ -28,7 +28,7 @@ def distort_with_wavtokenizer(samples,device,override):
         logging.info(f"Processing distorting with WavTokenizer for sample {filename} on device {device}")
         audio, sr = torchaudio.load(sample)
         audio = convert_audio(audio, sr, 24000, 1)
-        bandwidth_id = torch.tensor([0])
+        bandwidth_id = torch.tensor([0]).to(device)
         audio = audio.to(device)
         start = time.time()
         with torch.no_grad():
