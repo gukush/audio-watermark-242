@@ -35,7 +35,7 @@ def distort_with_wavtokenizer(samples,device,override):
             sth_tmp, discrete_code = wavtokenizer.encode_infer(audio,bandwidth_id=bandwidth_id)
         features = wavtokenizer.codes_to_features(discrete_code)
         audio_out = wavtokenizer.decode(features, bandwidth_id=bandwidth_id)
-        torchaudio.save(audio_out_path,audio_out,24000)
+        torchaudio.save(distorted_path,audio_out,24000)
         end = time.time()
         duration = end - start
         logging.info(f"Ended distorting with WavTokenizer for sample {filename} with voice {voice_name}, time: {duration}, device: {device}")
@@ -44,7 +44,7 @@ def distort_with_wavtokenizer(samples,device,override):
 
 bandwidth_id = torch.tensor([0])
 
-audio_out_path = "/project/tmp/test_clone_wavtokenizer.mp3" #Elevenlabs_184339_snippet2
+#audio_out_path = "/project/tmp/test_clone_wavtokenizer.mp3" #Elevenlabs_184339_snippet2
 
 
 def main(args):
