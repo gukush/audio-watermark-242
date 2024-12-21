@@ -54,13 +54,6 @@ def main(args):
     if args.samples is not None:
         samples = parse_samples(args.samples)
         #sublists = np.array_split(voices,num_devices)
-    if args.skip_list is not None:
-        skip_list = parse_already_done(args.skip_list[0])
-    else:
-        skip_list = None
-    all_combinations = [(sample,voice) for sample in samples for voice in voices]
-    kept_combinations = filter_combinations(all_combinations,skip_list,'/project/audio/clone/')
-    print(f"Skipped {len(all_combinations) - len(kept_combinations)} combinations")
     if args.gpus is not None:
         num_devices = int(args.gpus)
     if len(kept_combinations) < 12:
