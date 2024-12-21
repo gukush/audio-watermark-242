@@ -1,5 +1,8 @@
 import os
 import sys
+import logging
+import argparse
+import time
 sys.path.append('/project/WavTokenizer')
 from encoder.utils import convert_audio
 import torchaudio
@@ -80,9 +83,9 @@ def main(args):
         wavtokenizer = WavTokenizer.from_pretrained0802(config_path,model_path)
         wavtokenizer = wavtokenizer.to(device)
     if device == 'cpu':
-        voice_clone_samples(device_id,sublists[0],args.override,skip_list)
+        distort_with_wavtokenizer(sublists[0],device,args.override)
     else:
-        voice_clone_samples(device_id,sublists[device_id],args.override,skip_list)
+        distort_with_wavtokenizer(sublists[device_id],device,args.override)
 
 def parse_already_done(filename):
     with open(filename,"r") as f:
