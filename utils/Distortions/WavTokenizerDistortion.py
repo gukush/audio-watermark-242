@@ -10,23 +10,30 @@ config_path = "/project/models/wavtokenizer/wavtokenizer_mediumdata_frame75_3s_n
 model_path = "/project/models/wavtokenizer/wavtokenizer_medium_speech_320_24k_v2.ckpt"
 global wavtokenizer
 
-def distort_with_wavtokenizer(sample,device,override):
+def distort_with_wavtokenizer(samples,device,override):
     global wavtokenizer
-    filename = os.path.basename(sample)
-    sample_name, ext = os.path.splitext(filename)
-    distorted_path = os.path.join(ROOT_DIR,'audio','distorted',f'{sample_name}_wavtokenizer{ext}')
-    if os.path.isfile(distorted_path) and not override:
-        logging.info(f"File {distorted_path} already exists, skipping. Use --override option to change the behavior.")
-        continue
-    audio, sr = torchaudio.load(sample)
-    audio = convert_audio(audio, sr, 24000, 1)
-    bandwidth_id = torch.tensor([0])
-    audio = audio.to(device)
-    with torch.no_grad():
-        sth_tmp, discrete_code = wavtokenizer.encode_infer(audio,bandwidth_id=bandwidth_id)
-    features = wavtokenizer.codes_to_features(discrete_code)
-    audio_out = wavtokenizer.decode(features, bandwidth_id=bandwidth_id)
-    torchaudio.save(audio_out_path,audio_out,24000)
+    for sample in samples:
+        filename = os.path.basename(sample)
+        sample_name, ext = os.path.splitext(filename)
+        distorted_path = os.path.join(ROOT_DIR,'audio','distorted',f'{sample_name}_wavtokenizer{ext}')
+        if os.path.isfile(distorted_path) and not override:
+            logging.info(f"File {distorted_path} already exists, skipping. Use --override option to change the behavior.")
+            continue
+        logging.info(f"Processing distorting with WavTokenizer for sample {filename} on device {device}")
+        audio, sr = torchaudio.load(sample)
+        audio = convert_audio(audio, sr, 24000, 1)
+        bandwidth_id = torch.tensor([0])
+        audio = audio.to(device)
+        start = time.time()
+        with torch.no_grad():
+            sth_tmp, discrete_code = wavtokenizer.encode_infer(audio,bandwidth_id=bandwidth_id)
+        features = wavtokenizer.codes_to_features(discrete_code)
+        audio_out = wavtokenizer.decode(features, bandwidth_id=bandwidth_id)
+        torchaudio.save(audio_out_path,audio_out,24000)
+        end = time.time()
+        duration = end - start
+        logging.info(f"Ended distorting with WavTokenizer for sample {filename} with voice {voice_name}, time: {duration}, device: {device}")
+    logging.info(f"Device {device} ended cloning.")
 #torch.save(discrete_code,"/project/tmp/Elevenlabs_latent_wavtokenizer.pth")
 
 bandwidth_id = torch.tensor([0])
