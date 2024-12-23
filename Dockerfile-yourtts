@@ -21,7 +21,6 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
     && rm get-pip.py
 
 # Copy project files
-COPY requirements-yourtts.txt /project/
 COPY parallel_clone_with_yourTTS.py /project/parallel_clone_with_yourTTS.py
 WORKDIR /project
 
